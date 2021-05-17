@@ -1,28 +1,35 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
-import { Engine, Scene, FreeCamera, Vector3, HemisphericLight, MeshBuilder, SceneLoader, ArcRotateCamera, StandardMaterial, Texture, PBRMetallicRoughnessMaterial, Mesh, ActionManager, InterpolateValueAction, Color3, EasingFunction, Animation, CubicEase, ExecuteCodeAction, DynamicTexture } from '@babylonjs/core';
+import { Engine, Scene, FreeCamera, Vector3, HemisphericLight, MeshBuilder, SceneLoader, ArcRotateCamera, StandardMaterial, Texture, PBRMetallicRoughnessMaterial, Mesh, ActionManager, InterpolateValueAction, Color3, EasingFunction, Animation, CubicEase, ExecuteCodeAction, DynamicTexture, MultiMaterial, SubMesh } from '@babylonjs/core';
 
 @Component({
   selector: 'app-scene',
   templateUrl: './scene.component.html',
   styleUrls: ['./scene.component.css']
 })
+
 export class SceneComponent implements OnInit, AfterViewInit {
 	@ViewChild('renderCanvas') renderCanvas;
 	
 	scene: Scene;
   engine: Engine;
+  exhibitions: any = [];
+  loading: boolean = false;
 
-  constructor() { }
+  constructor(
+  ) { }
 
   ngOnInit(): void {
+  	// this.exhibition.exhibitions.then(() => {
+  	// 	console.log("S");
+  	// });
   }
 
   ngAfterViewInit(): void {
-    this.scene = this.createScene(this.renderCanvas.nativeElement);
+	    this.scene = this.createScene(this.renderCanvas.nativeElement);
 
-    this.engine.runRenderLoop(() => {
-      this.scene.render();
-    });
+	    this.engine.runRenderLoop(() => {
+	      this.scene.render();
+	    });
   }
 
   createScene(canvas: HTMLCanvasElement) {
@@ -89,28 +96,30 @@ export class SceneComponent implements OnInit, AfterViewInit {
 		ground.checkCollisions = true;
 
 		// Create painting
-		var artwork = new Texture("../assets/images/artwork_test/image_1.jpeg", scene);
+		var starting_point = 0
+		for(var idx = 1; idx <= 2; idx++) {
+			var artwork = new Texture("https://www.collectionartnb.ca/uploads/artworks/805/image/small_2014-03-2-Edward__Ned__Bea.jpg", scene);
+			
+							var artwork_size = artwork.getBaseSize();
+				console.log(artwork);
+				var plane = MeshBuilder.CreatePlane("plane", {width: 30, height: 30}, scene);
+		    var mat = new StandardMaterial("", scene);
+				plane.position = new Vector3(-249, 15, 30 * idx);
+				plane.rotation = new Vector3(0, -Math.PI / 2, 0);
+		    mat.diffuseTexture = artwork
+		    plane.material = mat;
 
-		setTimeout(function() {
-			var size = artwork.getBaseSize();
-			var plane = MeshBuilder.CreatePlane("plane", {width: (size.width / 10), height: (size.height / 10)}, scene);
-	    var mat = new StandardMaterial("", scene);
-			plane.position = new Vector3(-249, 15, 0);
-			plane.rotation = new Vector3(0, -Math.PI / 2, 0);
-	    mat.diffuseTexture = new Texture("../assets/images/artwork_test/image_1.jpeg", scene);
-	    plane.material = mat;
+		    plane.actionManager = new ActionManager(scene);
+		    plane.actionManager.registerAction(
+		    	new ExecuteCodeAction(
+		      ActionManager.OnPickTrigger, function (ev) {
+		      	console.log(artwork);
+		      	setCamLateralLeft(idx);
+		        }
+		      )
+				);
+		}
 
-	    plane.actionManager = new ActionManager(scene);
-	    plane.actionManager.registerAction(
-	    	new ExecuteCodeAction(
-	      ActionManager.OnPickTrigger, function (ev) {
-	      	console.log(ev);
-	      	setCamLateralLeft();
-	        }
-	      )
-			);
-
-		}, 1000);
 
 		 //Set font type
     var font_type = "Arial";
@@ -158,9 +167,9 @@ export class SceneComponent implements OnInit, AfterViewInit {
 
 	  var speed = 45;
 	  var frameCount = 200;
-		var setCamLateralLeft = function() {
-	  	animateCameraTargetToPosition(camera, speed, frameCount, new Vector3(-240, 15, 10));
-	  	animateCameraToPosition(camera, speed, frameCount, new Vector3(-200, 15, 10));
+		var setCamLateralLeft = function(idx) {
+	  	animateCameraTargetToPosition(camera, speed, frameCount, new Vector3(-240, 15, 10 * idx));
+	  	animateCameraToPosition(camera, speed, frameCount, new Vector3(-200, 15, 10 * idx));
 	  };
 
 	    var animateCameraTargetToPosition = function(cam, speed, frameCount, newPos) {
@@ -177,6 +186,11 @@ export class SceneComponent implements OnInit, AfterViewInit {
 	    var aable2 = Animation.CreateAndStartAnimation('at4', cam, 'position', speed, frameCount, cam.position, newPos, 0, ease);
 	    aable2.disposeOnEnd = true;
 	  }
+
+
+		var artworkTest = function(artwork, idx) {
+
+		}
 
     return scene;
   }

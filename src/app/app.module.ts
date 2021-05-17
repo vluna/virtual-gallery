@@ -4,17 +4,23 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SceneComponent } from './scene/scene.component';
+import { HttpClientModule } from '@angular/common/http';
+import { ExhibitionsComponent } from './exhibitions/exhibitions.component';
+
 
 @NgModule({
   declarations: [
     AppComponent,
-    SceneComponent
+    SceneComponent,
+    ExhibitionsComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule
   ],
-  providers: [],
+  providers: [
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
