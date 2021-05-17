@@ -6,6 +6,8 @@ import { AppComponent } from './app.component';
 import { SceneComponent } from './scene/scene.component';
 import { HttpClientModule } from '@angular/common/http';
 import { ExhibitionsComponent } from './exhibitions/exhibitions.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 
 @NgModule({
@@ -17,7 +19,9 @@ import { ExhibitionsComponent } from './exhibitions/exhibitions.component';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    BrowserAnimationsModule,
+    MatSnackBarModule
   ],
   providers: [
   ],

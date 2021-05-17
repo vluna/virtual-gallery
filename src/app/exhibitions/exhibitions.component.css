@@ -2,14 +2,49 @@
   width: 100%;
   height: 100%;
   background: #2980b9;
+  position: absolute;
+  top: 0;
 }
 
 #loading-screen {
-  -webkit-animation: bgcolorchange 20s infinite; /* Chrome, Safari, Opera */ 
-  animation: 20s infinite bgcolorchange;
+  -webkit-animation: alterateBackground 20s infinite;
+  animation: 20s infinite alterateBackground;
 }
 
-@keyframes bgcolorchange {
+#loading-screen #spinner {
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  transform: translate(-50%, -50%);
+}
+
+#loading-screen #spinner #spinner-spin {
+  height: 200px;
+  width: 200px;
+  border-radius: 50%;
+  border-top: solid 5px rgba(200, 200, 200, 0.3);
+  border-right: solid 5px rgba(200, 200, 200, 0.3);
+  border-bottom: solid 5px rgba(200, 200, 200, 0.3);
+  border-left: solid 5px white;
+  -webkit-animation: spinnerSpin 1s infinite linear;
+  animation: spinnerSpin 1s infinite linear;
+}
+
+#loading-screen #spinner #spinner-text {
+  position: absolute;
+  font-family: Lato, sans-serif;
+  top: calc(50% - 15px);
+  left: 10px;
+  text-align: center;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+/* ============== CSS Animations ============== */ 
+
+/* Change loading screen background */
+@keyframes alterateBackground {
   0% {
     background-color: #1abc9c;
   }
@@ -26,100 +61,40 @@
     background-color: #ffcb65;
   }
 }
-/* Chrome, Safari, Opera 7f8c8d */
- @-webkit-keyframes bgcolorchange {
-      0%   {background: #1abc9c;}
-      25%  {background: #2c3e50;}
-      25%  {background: #d35400;}
-      75%  {background: #27ae60;}
-      100% {background: #ffcb65;}
- }
 
-
-.sk-folding-cube {
-  margin: 20px auto;
-  width: 40px;
-  height: 40px;
-  position: relative;
-  -webkit-transform: rotateZ(45deg);
-          transform: rotateZ(45deg);
-}
-
-.sk-folding-cube .sk-cube {
-  float: left;
-  width: 50%;
-  height: 50%;
-  position: relative;
-  -webkit-transform: scale(1.1);
-      -ms-transform: scale(1.1);
-          transform: scale(1.1); 
-}
-.sk-folding-cube .sk-cube:before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: white;
-  -webkit-animation: sk-foldCubeAngle 2.4s infinite linear both;
-          animation: sk-foldCubeAngle 2.4s infinite linear both;
-  -webkit-transform-origin: 100% 100%;
-      -ms-transform-origin: 100% 100%;
-          transform-origin: 100% 100%;
-}
-.sk-folding-cube .sk-cube2 {
-  -webkit-transform: scale(1.1) rotateZ(90deg);
-          transform: scale(1.1) rotateZ(90deg);
-}
-.sk-folding-cube .sk-cube3 {
-  -webkit-transform: scale(1.1) rotateZ(180deg);
-          transform: scale(1.1) rotateZ(180deg);
-}
-.sk-folding-cube .sk-cube4 {
-  -webkit-transform: scale(1.1) rotateZ(270deg);
-          transform: scale(1.1) rotateZ(270deg);
-}
-.sk-folding-cube .sk-cube2:before {
-  -webkit-animation-delay: 0.3s;
-          animation-delay: 0.3s;
-}
-.sk-folding-cube .sk-cube3:before {
-  -webkit-animation-delay: 0.6s;
-          animation-delay: 0.6s; 
-}
-.sk-folding-cube .sk-cube4:before {
-  -webkit-animation-delay: 0.9s;
-          animation-delay: 0.9s;
-}
-@-webkit-keyframes sk-foldCubeAngle {
-  0%, 10% {
-    -webkit-transform: perspective(140px) rotateX(-180deg);
-            transform: perspective(140px) rotateX(-180deg);
-    opacity: 0; 
-  } 25%, 75% {
-    -webkit-transform: perspective(140px) rotateX(0deg);
-            transform: perspective(140px) rotateX(0deg);
-    opacity: 1; 
-  } 90%, 100% {
-    -webkit-transform: perspective(140px) rotateY(180deg);
-            transform: perspective(140px) rotateY(180deg);
-    opacity: 0; 
-  } 
+@-webkit-keyframes alterateBackground {
+  0% {
+    background-color: #1abc9c;
+  }
+  25% {
+    background-color: #2c3e50;
+  }
+  50% {
+    background-color: #d35400;
+  }
+  75% {
+    background-color: #27ae60;
+  }
+  100% {
+    background-color: #ffcb65;
+  }
 }
 
-@keyframes sk-foldCubeAngle {
-  0%, 10% {
-    -webkit-transform: perspective(140px) rotateX(-180deg);
-            transform: perspective(140px) rotateX(-180deg);
-    opacity: 0; 
-  } 25%, 75% {
-    -webkit-transform: perspective(140px) rotateX(0deg);
-            transform: perspective(140px) rotateX(0deg);
-    opacity: 1; 
-  } 90%, 100% {
-    -webkit-transform: perspective(140px) rotateY(180deg);
-            transform: perspective(140px) rotateY(180deg);
-    opacity: 0; 
+/* Rotate spinner */
+@keyframes spinnerSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@-webkit-keyframes spinnerSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }

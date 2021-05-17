@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 class Exhibition {
   constructor(
@@ -23,17 +24,24 @@ class Exhibition {
 export class ExhibitionsComponent implements OnInit {
 	title: string = "Exhibitions"
   loading: boolean = true;
-	URL: string = 'https://www.collectionartnb.ca/exhibitions';
+	URL: string = 'https://www.collectionartnb.ca/exhibitios';
 	EXHIBITIONS: any = []
 
   constructor(
-  	private httpClient: HttpClient
+  	private httpClient: HttpClient,
+  	private _snackBar: MatSnackBar
   ) { }
+
+
+
+  openSnackBar() {
+  }
+
 
   ngOnInit(): void {
   	this.loading = true;
-    console.log("Angular 11 Promises");
     this.getAll().then(() => {
+    	this.loading = false;
     	console.log(this.EXHIBITIONS);
     });
   }
@@ -57,7 +65,12 @@ export class ExhibitionsComponent implements OnInit {
         	});
         	resolve();
         }, error => {
-          reject(error);
+				  this._snackBar.open("Error: Unable to load exhibitions", "", {
+	      		horizontalPosition: "center",
+	      		verticalPosition: "top"
+				  });
+
+          reject();
         }
       );
     });
