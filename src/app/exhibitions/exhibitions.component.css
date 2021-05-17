@@ -2,8 +2,10 @@
   width: 100%;
   height: 100%;
   background: #2980b9;
-  position: absolute;
+  position: fixed;
   top: 0;
+  left: 0;
+  z-index: 9999999;
 }
 
 #loading-screen {
@@ -40,6 +42,24 @@
   font-size: 20px;
   font-weight: 600;
 }
+
+#exhibitions-list {
+  margin: 25px 0;
+}
+
+.exhibitions-card mat-card-actions a {
+  width: 100%;
+}
+
+.exhibitions-card {
+  width: 100%;
+}
+
+.exhibitions-card mat-card-content img {
+  width: 100%;
+  margin: 0!important;
+}
+
 
 /* ============== CSS Animations ============== */ 
 

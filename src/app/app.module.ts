@@ -7,8 +7,11 @@ import { SceneComponent } from './scene/scene.component';
 import { HttpClientModule } from '@angular/common/http';
 import { ExhibitionsComponent } from './exhibitions/exhibitions.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatGridListModule } from '@angular/material/grid-list';
 
 @NgModule({
   declarations: [
@@ -21,7 +24,11 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     AppRoutingModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatCardModule,
+    MatButtonModule,
+    MatGridListModule,
+    FlexLayoutModule
   ],
   providers: [
   ],

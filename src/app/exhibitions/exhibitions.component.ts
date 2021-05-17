@@ -8,7 +8,7 @@ class Exhibition {
     public title: string,
     public description: string,
     public image: string,
-    public total_artwork: number,
+    public total: number,
     public artworks: []
   ) {}
 }
@@ -22,20 +22,14 @@ class Exhibition {
 
 
 export class ExhibitionsComponent implements OnInit {
-	title: string = "Exhibitions"
   loading: boolean = true;
-	URL: string = 'https://www.collectionartnb.ca/exhibitios';
+	URL: string = 'https://www.collectionartnb.ca/exhibitions';
 	EXHIBITIONS: any = []
 
   constructor(
   	private httpClient: HttpClient,
-  	private _snackBar: MatSnackBar
+  	private snackBar: MatSnackBar
   ) { }
-
-
-
-  openSnackBar() {
-  }
 
 
   ngOnInit(): void {
@@ -59,13 +53,13 @@ export class ExhibitionsComponent implements OnInit {
 							response.title,
 							response.description,
 							response.image,
-							response.total_artwork,
+							response.total,
 							response.artworks
 						)
         	});
         	resolve();
         }, error => {
-				  this._snackBar.open("Error: Unable to load exhibitions", "", {
+				  this.snackBar.open("Error: Unable to load exhibitions", "", {
 	      		horizontalPosition: "center",
 	      		verticalPosition: "top"
 				  });

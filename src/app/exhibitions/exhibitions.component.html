@@ -5,14 +5,25 @@
 	</div>
 </div>
 
-<p>exhibitions works!</p>
+<section id="exhibitions-list">
+	<div fxLayout.xs="column" fxLayout="row wrap" fxLayoutGap="10px" ngClass.gt-xs="ml-10">
+	  <mat-card class="exhibitions-card" *ngFor="let exhibition of EXHIBITIONS" fxFlex.sm="0 1 calc(50%)" fxFlex.md="0 1 calc(33%)" fxFlex.gt-md="0 1 calc(25%)">
+			<mat-card-header>
+		    <mat-card-title>{{ exhibition.title }}</mat-card-title>
+		  	<mat-card-subtitle>{{ exhibition.total }} Artworks</mat-card-subtitle>
+		  </mat-card-header>
 
-<ul class="list-group">
-	<li class="list-group-item"
-	    *ngFor="let track of EXHIBITIONS">
-		<img src="{{track.total_artwork}}">
-		<a target="_blank"
-		   href="{{track.title}}">{{ track.title }}
-		</a>
-	</li>
-</ul>
+		  <mat-card-content>
+		  	<div>
+		    	<img *ngIf="exhibition.image" mat-card-image src="https://www.collectionartnb.ca/{{ exhibition.image }}" alt="Image {{ exhibition.title }}">
+		    	<div [innerHTML]="exhibition.description"></div>
+
+			  </div>
+		  </mat-card-content>
+
+		  <mat-card-actions>
+		    <a mat-raised-button color="primary">VIEW</a>
+		  </mat-card-actions>
+		</mat-card>
+	</div>
+</section>
