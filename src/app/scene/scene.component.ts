@@ -12,13 +12,14 @@ export class SceneComponent implements OnInit, AfterViewInit {
 	
 	scene: Scene;
   engine: Engine;
-  exhibitions: any = [];
+  EXHIBITIONS: any = [];
   loading: boolean = false;
 
   constructor(
   ) { }
 
   ngOnInit(): void {
+  	console.log(this.EXHIBITIONS)
   	// this.exhibition.exhibitions.then(() => {
   	// 	console.log("S");
   	// });

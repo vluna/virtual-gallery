@@ -1,12 +1,18 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
 import { AppRoutingModule } from './app-routing.module';
+import { HttpClientModule } from '@angular/common/http';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+// Components
 import { AppComponent } from './app.component';
 import { SceneComponent } from './scene/scene.component';
-import { HttpClientModule } from '@angular/common/http';
 import { ExhibitionsComponent } from './exhibitions/exhibitions.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+// Services
+import { ExhibitionsService } from './services/exhibitions.service';
+
+// Other
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
@@ -31,6 +37,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
     FlexLayoutModule
   ],
   providers: [
+    ExhibitionsService
   ],
   bootstrap: [AppComponent]
 })

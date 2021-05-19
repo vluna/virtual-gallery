@@ -7,7 +7,7 @@
 
 <section id="exhibitions-list">
 	<div fxLayout.xs="column" fxLayout="row wrap" fxLayoutGap="10px" ngClass.gt-xs="ml-10">
-	  <mat-card class="exhibitions-card" *ngFor="let exhibition of EXHIBITIONS" fxFlex.sm="0 1 calc(50%)" fxFlex.md="0 1 calc(33%)" fxFlex.gt-md="0 1 calc(25%)">
+	  <mat-card class="exhibitions-card" *ngFor="let exhibition of exhibitions" fxFlex.sm="0 1 calc(50%)" fxFlex.md="0 1 calc(33%)" fxFlex.gt-md="0 1 calc(25%)">
 			<mat-card-header>
 		    <mat-card-title>{{ exhibition.title }}</mat-card-title>
 		  	<mat-card-subtitle>{{ exhibition.total }} Artworks</mat-card-subtitle>
@@ -22,7 +22,7 @@
 		  </mat-card-content>
 
 		  <mat-card-actions>
-		    <a mat-raised-button color="primary">VIEW</a>
+		    <a [routerLink]="['/exhibitions', exhibition.id]" mat-raised-button color="primary">VIEW</a>
 		  </mat-card-actions>
 		</mat-card>
 	</div>
