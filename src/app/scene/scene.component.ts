@@ -1,5 +1,9 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+
 import { Engine, Scene, FreeCamera, Vector3, HemisphericLight, MeshBuilder, SceneLoader, ArcRotateCamera, StandardMaterial, Texture, PBRMetallicRoughnessMaterial, Mesh, ActionManager, InterpolateValueAction, Color3, EasingFunction, Animation, CubicEase, ExecuteCodeAction, DynamicTexture, MultiMaterial, SubMesh } from '@babylonjs/core';
+import { ExhibitionsService } from '../services/exhibitions.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-scene',
@@ -12,25 +16,43 @@ export class SceneComponent implements OnInit, AfterViewInit {
 	
 	scene: Scene;
   engine: Engine;
-  EXHIBITIONS: any = [];
-  loading: boolean = false;
+  exhibitions: any = [];
+  exhibition_slug: string;
+  loading: boolean = true;
 
   constructor(
+  	private exhibitionsService: ExhibitionsService,
+  	private snackBar: MatSnackBar,
+  	private actRoute: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
-  	console.log(this.EXHIBITIONS)
   	// this.exhibition.exhibitions.then(() => {
   	// 	console.log("S");
   	// });
   }
 
   ngAfterViewInit(): void {
+  	this.actRoute.paramMap.subscribe(params => {
+      this.exhibition_slug = params.get('slug');
+    });
+
+  	this.loading = true;
+    this.exhibitionsService.getById(this.exhibition_slug).then((res) => {
+    	this.exhibitions = res;
+    	this.loading = false;
+
 	    this.scene = this.createScene(this.renderCanvas.nativeElement);
 
 	    this.engine.runRenderLoop(() => {
 	      this.scene.render();
 	    });
+    }, (err) => {
+		  this.snackBar.open(err, "", {
+    		horizontalPosition: "center",
+    		verticalPosition: "top"
+		  });
+    });
   }
 
   createScene(canvas: HTMLCanvasElement) {

@@ -6,7 +6,7 @@ import { SceneComponent } from './scene/scene.component'
 
 const routes: Routes = [
 	{ path: '', redirectTo: '/exhibitions', pathMatch: 'full' },
-	{ path: 'exhibitions/:id', component: SceneComponent },
+	{ path: 'exhibitions/:slug', component: SceneComponent },
 	{ path: 'exhibitions', component: ExhibitionsComponent }
 ];
 

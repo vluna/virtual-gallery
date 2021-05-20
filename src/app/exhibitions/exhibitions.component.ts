@@ -12,7 +12,6 @@ import { ExhibitionsService } from '../services/exhibitions.service';
 
 export class ExhibitionsComponent implements OnInit {
   loading: boolean = true;
-	URL: string = 'https://www.collectionartnb.ca/exhibitions';
 	exhibitions: any = []
 
   constructor(
@@ -23,41 +22,15 @@ export class ExhibitionsComponent implements OnInit {
 
 
   ngOnInit(): void {
-  	this.loading = false;
-  	this.exhibitionsService.getAll().subscribe(exhibitions => this.exhibitions = exhibitions);
-    // this.getAll().then(() => {
-    // 	this.loading = false;
-    // });
+  	this.loading = true;
+    this.exhibitionsService.getAll().then((res) => {
+    	this.exhibitions = res;
+    	this.loading = false;
+    }, (err) => {
+		  this.snackBar.open(err, "", {
+    		horizontalPosition: "center",
+    		verticalPosition: "top"
+		  });
+    });
   }
-
-	// getAll() {
-	// 	const promise = new Promise<void>((resolve, reject) => {
- //      let endPoint = this.URL;
- //      this.httpClient
- //        .get<Exhibition[]>(endPoint)
- //        .toPromise()
- //        .then((res: any) => {
- //        	this.EXHIBITIONS = res.map((response: any) => {
- //        		return new Exhibition(
-	// 						response.id,
-	// 						response.title,
-	// 						response.description,
-	// 						response.image,
-	// 						response.total,
-	// 						response.artworks
-	// 					)
- //        	});
- //        	resolve();
- //        }, error => {
-	// 			  this.snackBar.open("Error: Unable to load exhibitions", "", {
-	//       		horizontalPosition: "center",
-	//       		verticalPosition: "top"
-	// 			  });
-
- //          reject();
- //        }
- //      );
- //    });
- //    return promise;
-	// }
 }
