@@ -16,7 +16,7 @@ export class SceneComponent implements OnInit, AfterViewInit {
 	
 	scene: Scene;
   engine: Engine;
-  exhibitions: any = [];
+  exhibition: any;
   exhibition_slug: string;
   loading: boolean = true;
 
@@ -27,9 +27,6 @@ export class SceneComponent implements OnInit, AfterViewInit {
   ) { }
 
   ngOnInit(): void {
-  	// this.exhibition.exhibitions.then(() => {
-  	// 	console.log("S");
-  	// });
   }
 
   ngAfterViewInit(): void {
@@ -39,7 +36,7 @@ export class SceneComponent implements OnInit, AfterViewInit {
 
   	this.loading = true;
     this.exhibitionsService.getById(this.exhibition_slug).then((res) => {
-    	this.exhibitions = res;
+    	this.exhibition = res;
     	this.loading = false;
 
 	    this.scene = this.createScene(this.renderCanvas.nativeElement);
@@ -56,6 +53,13 @@ export class SceneComponent implements OnInit, AfterViewInit {
   }
 
   createScene(canvas: HTMLCanvasElement) {
+ 		// Dynamic constants from api
+  	const artwork_per_wall = Math.ceil(this.exhibition.total / 4)
+  	const wall_height = 100;
+  	const wall_width = artwork_per_wall * 100;
+  	const half_wall_width = Math.ceil(wall_width / 2);
+  	const floor_height = wall_width;
+  	const floor_width = wall_width;
 
     this.engine = new Engine(canvas);
 
@@ -67,153 +71,193 @@ export class SceneComponent implements OnInit, AfterViewInit {
 
 
 		// This creates and positions a free camera (non-mesh)
-    const camera = new FreeCamera('camera1', new Vector3(-240, 10, -10), scene);
+    const camera = new FreeCamera('camera1', new Vector3(-(half_wall_width/2), 16, -10), scene);
     // This targets the camera to scene origin
-    camera.setTarget(new Vector3(0, 0, 0));
+    camera.setTarget(new Vector3(0, 16, 0));
     // This attaches the camera to the canvas
     camera.attachControl(canvas, true);
 		camera.checkCollisions = true;
-		camera.ellipsoid = new Vector3(4, 6, 4);
+		camera.ellipsoid = new Vector3(4, 16, 4);
     camera.applyGravity = true;
 
 
     // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
-    const light = new HemisphericLight('light', new Vector3(1, 1, 0), scene);
+    const light = new HemisphericLight('light', new Vector3(0, 1, 0), scene);
     // Default intensity is 1. Let's dim the light a small amount
-    light.intensity = 0.7;
+    light.intensity = 1;
 
     // Build walls
     const wall_material = new StandardMaterial("wall_material", scene);
 		wall_material.diffuseTexture = new Texture("/assets/images/textures/concrete.jpg", scene);
 
-    const left_wall = MeshBuilder.CreateBox('box', {width: 500, height: 40}, scene);
-		left_wall.position = new Vector3(0, 20, -250);
+    const left_wall = MeshBuilder.CreateBox('box', {width: wall_width, height: wall_height}, scene);
+		left_wall.position = new Vector3(0, 20, -half_wall_width);
 		left_wall.material = wall_material;
 		left_wall.checkCollisions = true;
 		left_wall.position.y = 20;
 
-    const right_wall = MeshBuilder.CreateBox('box', {width: 500, height: 40}, scene);
-		right_wall.position = new Vector3(0, 20, 250);
+    const right_wall = MeshBuilder.CreateBox('box', {width: wall_width, height: wall_height}, scene);
+		right_wall.position = new Vector3(0, 20, half_wall_width);
 		right_wall.material = wall_material;
 		right_wall.checkCollisions = true;
 		right_wall.position.y = 20;
 
-    const front_wall = MeshBuilder.CreateBox('box', {width: 500, height: 40}, scene);
-		front_wall.position = new Vector3(250, 20, 0);
+    const front_wall = MeshBuilder.CreateBox('box', {width: wall_width, height: wall_height}, scene);
+		front_wall.position = new Vector3(half_wall_width, 20, 0);
 		front_wall.material = wall_material;
 		front_wall.checkCollisions = true;
 		front_wall.rotation = new Vector3(0, Math.PI / 2, 0);
 
-    const back_wall = MeshBuilder.CreateBox('box', {width: 500, height: 40}, scene);
-		back_wall.position = new Vector3(-250, 20, 0);
+    const back_wall = MeshBuilder.CreateBox('box', {width: wall_width, height: wall_height}, scene);
+		back_wall.position = new Vector3(-half_wall_width, 20, 0);
 		back_wall.material = wall_material;
 		back_wall.checkCollisions = true;
-		back_wall.rotation = new Vector3(0, Math.PI / 2, 0);
+		back_wall.rotation = new Vector3(0, -Math.PI / 2, 0);
 
     
 		// Create ground
-    const ground = MeshBuilder.CreateGround('ground', {width: 500, height: 500}, scene);
+    const ground = MeshBuilder.CreateGround('ground', {width: floor_width, height: floor_width}, scene);
 		const ground_material = new StandardMaterial("ground_material", scene);
 		ground_material.diffuseTexture = new Texture("/assets/images/textures/wood.jpg", scene);
 		ground.material = ground_material;
 		ground.checkCollisions = true;
 
 		// Create painting
-		var starting_point = 0
-		for(var idx = 1; idx <= 2; idx++) {
-			var artwork = new Texture("https://www.collectionartnb.ca/uploads/artworks/805/image/small_2014-03-2-Edward__Ned__Bea.jpg", scene);
-			
-							var artwork_size = artwork.getBaseSize();
+		var idx_artwork = 0;
+		var idx_wall = 0;
+		var artwork_space = 30; 
+		var walls = {
+			0: { // Front Wall
+				id: "front",
+				rotation: [0, Math.PI / 2, 0],
+				position: [half_wall_width-1, 30, 0]
+			}, 
+			1: { // Back Wall
+				id: "back",
+				rotation: [0, -Math.PI / 2, 0],
+				position: [-(half_wall_width-1), 30, -(half_wall_width)]
+			}, 
+			2: { // Left Wall
+				id: "left",
+				rotation: [],
+				position: [50, 30, half_wall_width-1]
+			}, 
+			3: { // Right Wall
+				id: "right",
+				rotation: [],
+				position: [50, 30, -(half_wall_width-1)]
+			}
+		};
+
+		while(idx_artwork < this.exhibition.total) {
+			for(let idx = 0; idx < artwork_per_wall; idx++) {
+			  artwork_space += artwork_space * idx_wall;
+				let current_wall_position = walls[idx_wall]["position"];
+				let current_wall_rotation = walls[idx_wall]["rotation"];
+
+
+	  		let artwork = this.exhibition.artworks[idx_artwork];
 				console.log(artwork);
-				var plane = MeshBuilder.CreatePlane("plane", {width: 30, height: 30}, scene);
-		    var mat = new StandardMaterial("", scene);
-				plane.position = new Vector3(-249, 15, 30 * idx);
-				plane.rotation = new Vector3(0, -Math.PI / 2, 0);
-		    mat.diffuseTexture = artwork
-		    plane.material = mat;
+				console.log(artwork_per_wall);
+				console.log(artwork_space);
 
-		    plane.actionManager = new ActionManager(scene);
-		    plane.actionManager.registerAction(
-		    	new ExecuteCodeAction(
-		      ActionManager.OnPickTrigger, function (ev) {
-		      	console.log(artwork);
-		      	setCamLateralLeft(idx);
-		        }
-		      )
-				);
+				var texture = new Texture(`https://www.collectionartnb.ca/${artwork.image}`, scene);
+				
+				var plane = MeshBuilder.CreatePlane(artwork.slug, { width: (artwork.width / 10), height: (artwork.height / 10) }, scene);
+			  var material = new StandardMaterial(`material-${artwork.slug}`, scene);
+				plane.position = new Vector3(current_wall_position[0], current_wall_position[1], (current_wall_position[2] + artwork_space))
+				if(current_wall_rotation.length > 0) {
+					plane.rotation = new Vector3(current_wall_rotation[0], current_wall_rotation[1], current_wall_rotation[2]);
+				}
+
+			  material.diffuseTexture = texture;
+			  plane.material = material;
+			  idx_artwork += 1;
+
+		  //   plane.actionManager = new ActionManager(scene);
+		  //   plane.actionManager.registerAction(
+		  //   	new ExecuteCodeAction(
+		  //     ActionManager.OnPickTrigger, function (ev) {
+		  //     	console.log(artwork);
+		  //     	setCamLateralLeft(idx);
+		  //       }
+		  //     )
+				// );
+		  }
+		  idx_wall += 1
 		}
 
 
-		 //Set font type
-    var font_type = "Arial";
+	// 	 //Set font type
+ //    var font_type = "Arial";
 	
-	//Set width an height for plane
-    var planeWidth = 100;
-    var planeHeight = 30;
+	// //Set width an height for plane
+ //    var planeWidth = 100;
+ //    var planeHeight = 30;
 
-    //Create plane
-    var plane = MeshBuilder.CreatePlane("plane", {width:planeWidth, height:planeHeight}, scene);
+ //    //Create plane
+ //    var plane = MeshBuilder.CreatePlane("plane", {width:planeWidth, height:planeHeight}, scene);
 
-    //Set width and height for dynamic texture using same multiplier
-    var DTWidth = planeWidth * 60;
-    var DTHeight = planeHeight * 60;
+ //    //Set width and height for dynamic texture using same multiplier
+ //    var DTWidth = planeWidth * 60;
+ //    var DTHeight = planeHeight * 60;
 
-    //Set text
-    var text = "Some words to fit";
+ //    //Set text
+ //    var text = "Some words to fit";
     
-    //Create dynamic texture
-    var dynamicTexture = new DynamicTexture("DynamicTexture", {width:DTWidth, height:DTHeight}, scene, true);
+ //    //Create dynamic texture
+ //    var dynamicTexture = new DynamicTexture("DynamicTexture", {width:DTWidth, height:DTHeight}, scene, true);
 
-    //Check width of text for given font type at any size of font
-    var ctx = dynamicTexture.getContext();
-	var size = 12; //any value will work
-    ctx.font = size + "px " + font_type;
-    var textWidth = ctx.measureText(text).width;
+ //    //Check width of text for given font type at any size of font
+ //    var ctx = dynamicTexture.getContext();
+	// var size = 12; //any value will work
+ //    ctx.font = size + "px " + font_type;
+ //    var textWidth = ctx.measureText(text).width;
     
-    //Calculate ratio of text width to size of font used
-    var ratio = textWidth/size;
+ //    //Calculate ratio of text width to size of font used
+ //    var ratio = textWidth/size;
 	
-	//set font to be actually used to write text on dynamic texture
-    var font_size = Math.floor(DTWidth / (ratio * 1)); //size of multiplier (1) can be adjusted, increase for smaller text
-    var font = font_size + "px " + font_type;
+	// //set font to be actually used to write text on dynamic texture
+ //    var font_size = Math.floor(DTWidth / (ratio * 1)); //size of multiplier (1) can be adjusted, increase for smaller text
+ //    var font = font_size + "px " + font_type;
 	
-	//Draw text
-    dynamicTexture.drawText(text, null, null, font, "#000000", "#ffffff", true);
+	// //Draw text
+ //    dynamicTexture.drawText(text, null, null, font, "#000000", "#ffffff", true);
 
-    //create material
-    var mat = new StandardMaterial("mat", scene);
-    mat.diffuseTexture = dynamicTexture;
+ //    //create material
+ //    var mat = new StandardMaterial("mat", scene);
+ //    mat.diffuseTexture = dynamicTexture;
     
-    //apply material
-    plane.material = mat;
+ //    //apply material
+ //    plane.material = mat;
 
 
-	  var speed = 45;
-	  var frameCount = 200;
-		var setCamLateralLeft = function(idx) {
-	  	animateCameraTargetToPosition(camera, speed, frameCount, new Vector3(-240, 15, 10 * idx));
-	  	animateCameraToPosition(camera, speed, frameCount, new Vector3(-200, 15, 10 * idx));
-	  };
+	//   var speed = 45;
+	//   var frameCount = 200;
+	// 	var setCamLateralLeft = function(idx) {
+	//   	animateCameraTargetToPosition(camera, speed, frameCount, new Vector3(-240, 15, 10 * idx));
+	//   	animateCameraToPosition(camera, speed, frameCount, new Vector3(-200, 15, 10 * idx));
+	//   };
 
-	    var animateCameraTargetToPosition = function(cam, speed, frameCount, newPos) {
-	        var ease = new CubicEase();
-	        ease.setEasingMode(EasingFunction.EASINGMODE_EASEINOUT);
+	//     var animateCameraTargetToPosition = function(cam, speed, frameCount, newPos) {
+	//         var ease = new CubicEase();
+	//         ease.setEasingMode(EasingFunction.EASINGMODE_EASEINOUT);
 
-	        var aable1 = Animation.CreateAndStartAnimation('at5', cam, 'target', speed, frameCount, cam.target, newPos, 0, ease);
-	        aable1.disposeOnEnd = true;
-	    }
+	//         var aable1 = Animation.CreateAndStartAnimation('at5', cam, 'target', speed, frameCount, cam.target, newPos, 0, ease);
+	//         aable1.disposeOnEnd = true;
+	//     }
 
-	  var animateCameraToPosition = function(cam, speed, frameCount, newPos) {
-	  	var ease = new CubicEase();
-	    ease.setEasingMode(EasingFunction.EASINGMODE_EASEINOUT);
-	    var aable2 = Animation.CreateAndStartAnimation('at4', cam, 'position', speed, frameCount, cam.position, newPos, 0, ease);
-	    aable2.disposeOnEnd = true;
-	  }
+	//   var animateCameraToPosition = function(cam, speed, frameCount, newPos) {
+	//   	var ease = new CubicEase();
+	//     ease.setEasingMode(EasingFunction.EASINGMODE_EASEINOUT);
+	//     var aable2 = Animation.CreateAndStartAnimation('at4', cam, 'position', speed, frameCount, cam.position, newPos, 0, ease);
+	//     aable2.disposeOnEnd = true;
+	//   }
 
 
-		var artworkTest = function(artwork, idx) {
+	// 	var artworkTest = function(artwork, idx) {
 
-		}
+	// 	}
 
     return scene;
   }

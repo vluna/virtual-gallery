@@ -10,7 +10,7 @@ class Exhibition {
     public title: string,
     public description: string,
     public image: string,
-    public total_artwork: number,
+    public total: number,
     public artworks: []
   ) {}
 }
