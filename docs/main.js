@@ -321,7 +321,7 @@ class SceneComponent {
         light.intensity = 1;
         // Build walls
         const wall_material = new _babylonjs_core__WEBPACK_IMPORTED_MODULE_0__["StandardMaterial"]("wall_material", scene);
-        wall_material.diffuseTexture = new _babylonjs_core__WEBPACK_IMPORTED_MODULE_0__["Texture"]("/assets/images/textures/concrete.jpg", scene);
+        wall_material.diffuseTexture = new _babylonjs_core__WEBPACK_IMPORTED_MODULE_0__["Texture"]("/virtual-gallery/assets/images/textures/concrete.jpg", scene);
         const left_wall = _babylonjs_core__WEBPACK_IMPORTED_MODULE_0__["MeshBuilder"].CreateBox('box', { width: wall_width, height: wall_height }, scene);
         left_wall.position = new _babylonjs_core__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 20, -half_wall_width);
         left_wall.material = wall_material;
@@ -345,7 +345,7 @@ class SceneComponent {
         // Create ground
         const ground = _babylonjs_core__WEBPACK_IMPORTED_MODULE_0__["MeshBuilder"].CreateGround('ground', { width: floor_width, height: floor_width }, scene);
         const ground_material = new _babylonjs_core__WEBPACK_IMPORTED_MODULE_0__["StandardMaterial"]("ground_material", scene);
-        ground_material.diffuseTexture = new _babylonjs_core__WEBPACK_IMPORTED_MODULE_0__["Texture"]("/assets/images/textures/wood.jpg", scene);
+        ground_material.diffuseTexture = new _babylonjs_core__WEBPACK_IMPORTED_MODULE_0__["Texture"]("/virtual-gallery/assets/images/textures/wood.jpg", scene);
         ground.material = ground_material;
         ground.checkCollisions = true;
         // Create painting
