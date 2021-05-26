@@ -71,9 +71,9 @@ export class SceneComponent implements OnInit, AfterViewInit {
 
 
 		// This creates and positions a free camera (non-mesh)
-    const camera = new FreeCamera('camera1', new Vector3(-(half_wall_width/2), 16, -10), scene);
+    const camera = new FreeCamera('camera-movement', new Vector3(-(half_wall_width/2), 32, -10), scene);
     // This targets the camera to scene origin
-    camera.setTarget(new Vector3(0, 16, 0));
+    camera.setTarget(new Vector3(0, 32, 0));
     // This attaches the camera to the canvas
     camera.attachControl(canvas, true);
 		camera.checkCollisions = true;
@@ -135,17 +135,17 @@ export class SceneComponent implements OnInit, AfterViewInit {
 			1: { // Back Wall
 				id: "back",
 				rotation: [0, -Math.PI / 2, 0],
-				position: [-(half_wall_width-1), 30, -(half_wall_width)]
+				position: [-(half_wall_width-1), 30, 0]
 			}, 
 			2: { // Left Wall
 				id: "left",
 				rotation: [],
-				position: [50, 30, half_wall_width-1]
+				position: [0, 30, half_wall_width-1]
 			}, 
 			3: { // Right Wall
 				id: "right",
-				rotation: [],
-				position: [50, 30, -(half_wall_width-1)]
+				rotation: [0, Math.PI, 0],
+				position: [0, 30, -(half_wall_width-1)]
 			}
 		};
 
@@ -165,7 +165,7 @@ export class SceneComponent implements OnInit, AfterViewInit {
 				
 				var plane = MeshBuilder.CreatePlane(artwork.slug, { width: (artwork.width / 10), height: (artwork.height / 10) }, scene);
 			  var material = new StandardMaterial(`material-${artwork.slug}`, scene);
-				plane.position = new Vector3(current_wall_position[0], current_wall_position[1], (current_wall_position[2] + artwork_space))
+				plane.position = new Vector3(current_wall_position[0], current_wall_position[1], (current_wall_position[2]))
 				if(current_wall_rotation.length > 0) {
 					plane.rotation = new Vector3(current_wall_rotation[0], current_wall_rotation[1], current_wall_rotation[2]);
 				}
