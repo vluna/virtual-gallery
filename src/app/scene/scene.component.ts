@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { Engine, Scene, FreeCamera, Vector3, HemisphericLight, MeshBuilder, SceneLoader, ArcRotateCamera, StandardMaterial, Texture, PBRMetallicRoughnessMaterial, Mesh, ActionManager, InterpolateValueAction, Color3, EasingFunction, Animation, CubicEase, ExecuteCodeAction, DynamicTexture, MultiMaterial, SubMesh } from '@babylonjs/core';
+import { Engine, Scene, FreeCamera, Vector3, HemisphericLight, MeshBuilder, SceneLoader, ArcRotateCamera, StandardMaterial, Texture, PBRMetallicRoughnessMaterial, Mesh, ActionManager, InterpolateValueAction, Color3, EasingFunction, Animation, CubicEase, ExecuteCodeAction, DynamicTexture, MultiMaterial, SubMesh, Matrix } from '@babylonjs/core';
 import { ExhibitionsService } from '../services/exhibitions.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -56,7 +56,7 @@ export class SceneComponent implements OnInit, AfterViewInit {
  		// Dynamic constants from api
   	const artwork_per_wall = Math.ceil(this.exhibition.total / 4)
   	const wall_height = 100;
-  	const wall_width = artwork_per_wall * 100;
+  	const wall_width = (artwork_per_wall * 40);
   	const half_wall_width = Math.ceil(wall_width / 2);
   	const floor_height = wall_width;
   	const floor_width = wall_width;
@@ -79,7 +79,6 @@ export class SceneComponent implements OnInit, AfterViewInit {
 		camera.checkCollisions = true;
 		camera.ellipsoid = new Vector3(4, 16, 4);
     camera.applyGravity = true;
-
 
     // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
     const light = new HemisphericLight('light', new Vector3(0, 1, 0), scene);
@@ -125,54 +124,73 @@ export class SceneComponent implements OnInit, AfterViewInit {
 		// Create painting
 		var idx_artwork = 0;
 		var idx_wall = 0;
-		var artwork_space = 30; 
+		var artwork_space = (-half_wall_width/2) - 13; 
 		var walls = {
 			0: { // Front Wall
 				id: "front",
-				rotation: [0, Math.PI / 2, 0],
-				position: [half_wall_width-1, 30, 0]
+				rotation: [0, (Math.PI / 2), 0],
+				position: [half_wall_width-1, 30, 0],
+				frame_position: [half_wall_width-.75, 30, 0]
 			}, 
 			1: { // Back Wall
 				id: "back",
-				rotation: [0, -Math.PI / 2, 0],
-				position: [-(half_wall_width-1), 30, 0]
+				rotation: [0, (-Math.PI / 2), 0],
+				position: [-(half_wall_width-1), 30, 0],
+				frame_position: [-(half_wall_width-.75), 30, 0]
 			}, 
 			2: { // Left Wall
 				id: "left",
 				rotation: [],
-				position: [0, 30, half_wall_width-1]
+				position: [0, 30, half_wall_width-1],
+				frame_position: [0, 30, half_wall_width-.75]
 			}, 
 			3: { // Right Wall
 				id: "right",
 				rotation: [0, Math.PI, 0],
-				position: [0, 30, -(half_wall_width-1)]
+				position: [0, 30, -(half_wall_width-1)],
+				frame_position: [0, 30, -(half_wall_width-.75)]
 			}
 		};
 
 		while(idx_artwork < this.exhibition.total) {
-			for(let idx = 0; idx < artwork_per_wall; idx++) {
-			  artwork_space += artwork_space * idx_wall;
+			for(let idx = 0; (idx < artwork_per_wall && idx_artwork < this.exhibition.total); idx++) {
+			  let artwork = this.exhibition.artworks[idx_artwork];
 				let current_wall_position = walls[idx_wall]["position"];
+				let current_wall_frame_position = walls[idx_wall]["frame_position"];
 				let current_wall_rotation = walls[idx_wall]["rotation"];
+	  		
+				let current_artwork_width = artwork.width / 10;
+				let current_artwork_height = artwork.height / 10;
 
+				var artwork_texture = new Texture(`https://www.collectionartnb.ca/${artwork.image}`, scene);
+				var artwork_plane = MeshBuilder.CreatePlane(artwork.slug, { width: current_artwork_width, height: current_artwork_height }, scene);
+			  var artwork_material = new StandardMaterial(`artwork-${artwork.slug}`, scene);
+			  artwork_material.diffuseTexture = artwork_texture;
+			  artwork_plane.material = artwork_material;
 
-	  		let artwork = this.exhibition.artworks[idx_artwork];
-				console.log(artwork);
-				console.log(artwork_per_wall);
-				console.log(artwork_space);
+			  var frame_texture = new Texture('assets/images/textures/wood.jpg', scene);
+				var frame_plane = MeshBuilder.CreatePlane(artwork.slug, { width: current_artwork_width+2, height: current_artwork_height+2 }, scene);
+			  var frame_material = new StandardMaterial(`frame-${artwork.slug}`, scene);
+			  frame_material.diffuseTexture = frame_texture;
+			  frame_plane.material = frame_material;
 
-				var texture = new Texture(`https://www.collectionartnb.ca/${artwork.image}`, scene);
-				
-				var plane = MeshBuilder.CreatePlane(artwork.slug, { width: (artwork.width / 10), height: (artwork.height / 10) }, scene);
-			  var material = new StandardMaterial(`material-${artwork.slug}`, scene);
-				plane.position = new Vector3(current_wall_position[0], current_wall_position[1], (current_wall_position[2]))
-				if(current_wall_rotation.length > 0) {
-					plane.rotation = new Vector3(current_wall_rotation[0], current_wall_rotation[1], current_wall_rotation[2]);
+			  if(walls[idx_wall]['id'] == 'left' || walls[idx_wall]['id'] == 'right') {
+					artwork_plane.position = new Vector3(artwork_space, current_wall_position[1], current_wall_position[2])
+					frame_plane.position = new Vector3(artwork_space, current_wall_frame_position[1], current_wall_frame_position[2])
+			  } else {
+					artwork_plane.position = new Vector3(current_wall_position[0], current_wall_position[1], artwork_space)
+					frame_plane.position = new Vector3(current_wall_frame_position[0], current_wall_frame_position[1], artwork_space)
 				}
 
-			  material.diffuseTexture = texture;
-			  plane.material = material;
+				if(current_wall_rotation.length > 0) {
+					artwork_plane.rotation = new Vector3(current_wall_rotation[0], current_wall_rotation[1], current_wall_rotation[2]);
+					frame_plane.rotation = new Vector3(current_wall_rotation[0], current_wall_rotation[1], current_wall_rotation[2]);
+				}
+
+
+
 			  idx_artwork += 1;
+			  artwork_space += 44;
 
 		  //   plane.actionManager = new ActionManager(scene);
 		  //   plane.actionManager.registerAction(
@@ -185,6 +203,7 @@ export class SceneComponent implements OnInit, AfterViewInit {
 				// );
 		  }
 		  idx_wall += 1
+			artwork_space = -half_wall_width/2; 
 		}
 
 
