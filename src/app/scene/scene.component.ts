@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { Engine, Scene, FreeCamera, Vector3, HemisphericLight, MeshBuilder, SceneLoader, ArcRotateCamera, StandardMaterial, Texture, PBRMetallicRoughnessMaterial, Mesh, ActionManager, InterpolateValueAction, Color3, EasingFunction, Animation, CubicEase, ExecuteCodeAction, DynamicTexture, MultiMaterial, SubMesh, Matrix } from '@babylonjs/core';
+import { Engine, Scene, FreeCamera, Vector3, HemisphericLight, MeshBuilder, SceneLoader, ArcRotateCamera, StandardMaterial, Texture, PBRMetallicRoughnessMaterial, Mesh, ActionManager, InterpolateValueAction, Color3, EasingFunction, Animation, CubicEase, ExecuteCodeAction, DynamicTexture } from '@babylonjs/core';
 import { ExhibitionsService } from '../services/exhibitions.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -55,8 +55,8 @@ export class SceneComponent implements OnInit, AfterViewInit {
   createScene(canvas: HTMLCanvasElement) {
  		// Dynamic constants from api
   	const artwork_per_wall = Math.ceil(this.exhibition.total / 4)
-  	const wall_height = 100;
-  	const wall_width = (artwork_per_wall * 40);
+  	const wall_height = 200;
+  	const wall_width = (artwork_per_wall * 75);
   	const half_wall_width = Math.ceil(wall_width / 2);
   	const floor_height = wall_width;
   	const floor_width = wall_width;
@@ -124,33 +124,40 @@ export class SceneComponent implements OnInit, AfterViewInit {
 		// Create painting
 		var idx_artwork = 0;
 		var idx_wall = 0;
-		var artwork_space = (-half_wall_width/2) - 13; 
+
+		var artwork_space = 0;
+		if(artwork_per_wall > 1) {
+			artwork_space = -half_wall_width/((artwork_per_wall/2) <= 1 ? 2 : (artwork_per_wall/2));
+		}
+
 		var walls = {
 			0: { // Front Wall
 				id: "front",
 				rotation: [0, (Math.PI / 2), 0],
-				position: [half_wall_width-1, 30, 0],
-				frame_position: [half_wall_width-.75, 30, 0]
+				position: [half_wall_width-1, 40, 0],
+				frame_position: [half_wall_width-.75, 40, 0]
 			}, 
 			1: { // Back Wall
 				id: "back",
 				rotation: [0, (-Math.PI / 2), 0],
-				position: [-(half_wall_width-1), 30, 0],
-				frame_position: [-(half_wall_width-.75), 30, 0]
+				position: [-(half_wall_width-1), 40, 0],
+				frame_position: [-(half_wall_width-.75), 40, 0]
 			}, 
 			2: { // Left Wall
 				id: "left",
 				rotation: [],
-				position: [0, 30, half_wall_width-1],
-				frame_position: [0, 30, half_wall_width-.75]
+				position: [0, 40, half_wall_width-1],
+				frame_position: [0, 40, half_wall_width-.75]
 			}, 
 			3: { // Right Wall
 				id: "right",
 				rotation: [0, Math.PI, 0],
-				position: [0, 30, -(half_wall_width-1)],
-				frame_position: [0, 30, -(half_wall_width-.75)]
+				position: [0, 40, -(half_wall_width-1)],
+				frame_position: [0, 40, -(half_wall_width-.75)]
 			}
 		};
+
+		console.log(this.exhibition.artworks);
 
 		while(idx_artwork < this.exhibition.total) {
 			for(let idx = 0; (idx < artwork_per_wall && idx_artwork < this.exhibition.total); idx++) {
@@ -182,15 +189,16 @@ export class SceneComponent implements OnInit, AfterViewInit {
 					frame_plane.position = new Vector3(current_wall_frame_position[0], current_wall_frame_position[1], artwork_space)
 				}
 
+		    var artwork_light = new HemisphericLight(`light-${artwork.slug}`, new Vector3(current_wall_position[0], current_wall_position[1], artwork_space), scene);
+		    artwork_light.intensity = 1;
+
 				if(current_wall_rotation.length > 0) {
 					artwork_plane.rotation = new Vector3(current_wall_rotation[0], current_wall_rotation[1], current_wall_rotation[2]);
 					frame_plane.rotation = new Vector3(current_wall_rotation[0], current_wall_rotation[1], current_wall_rotation[2]);
 				}
 
-
-
 			  idx_artwork += 1;
-			  artwork_space += 44;
+			  artwork_space += 50;
 
 		  //   plane.actionManager = new ActionManager(scene);
 		  //   plane.actionManager.registerAction(
@@ -203,7 +211,10 @@ export class SceneComponent implements OnInit, AfterViewInit {
 				// );
 		  }
 		  idx_wall += 1
-			artwork_space = -half_wall_width/2; 
+		  var artwork_space = 0;
+			if(artwork_per_wall > 1) {
+				artwork_space = -half_wall_width/((artwork_per_wall/2) <= 1 ? 2 : (artwork_per_wall/2));
+			}
 		}
 
 
