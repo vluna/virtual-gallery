@@ -1,5 +1,41 @@
+header {  
+  position: absolute;
+  top: 0;
+  background: #212529;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  left: 0;
+  height: 200px;
+}
+
+header mat-form-field {
+  width: 60%;
+  margin: 0 20%;
+}
+
+header mat-form-field mat-icon {
+  color: white;
+}
+
+header mat-form-field input {
+  color: white;
+  caret-color: white;
+}
+
+header img {
+  text-align: center;
+  margin: 25px calc(50% - 125px);
+}
+
 #exhibitions-list {
-  margin: 25px 0;
+  margin: 250px 0 25px 0;
+}
+
+#exhibitions-list h1 {
+  text-align: center;
+  margin: 0 0 45px;
+  font-weight: bold;
 }
 
 .exhibitions-card mat-card-actions a {
@@ -13,4 +49,25 @@
 .exhibitions-card mat-card-content img {
   width: 100%;
   margin: 0!important;
+}
+
+footer {  
+  position: absolute;
+  background: #212529;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  left: 0;
+  align-content: center;
+}
+
+footer p {
+  text-align: center;
+  color: white;
+  margin: 25px 0;
+}
+
+footer img {
+  text-align: center;
+  margin: 25px calc(50% - 75px);
 }

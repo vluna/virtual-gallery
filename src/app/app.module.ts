@@ -12,18 +12,28 @@ import { ExhibitionsComponent } from './exhibitions/exhibitions.component';
 // Services
 import { ExhibitionsService } from './services/exhibitions.service';
 
+// Pipes
+import { ExhibitionsFilterPipe } from './pipes/exhibitions-filter.pipe';
+
 // Other
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+
+import { FormsModule } from '@angular/forms'
 
 @NgModule({
   declarations: [
     AppComponent,
     SceneComponent,
-    ExhibitionsComponent
+    ExhibitionsComponent,
+    ExhibitionsFilterPipe
   ],
   imports: [
     BrowserModule,
@@ -34,7 +44,12 @@ import { MatGridListModule } from '@angular/material/grid-list';
     MatCardModule,
     MatButtonModule,
     MatGridListModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    FormsModule,
+    MatAutocompleteModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule
   ],
   providers: [
     ExhibitionsService

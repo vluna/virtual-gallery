@@ -59,6 +59,22 @@ body {
 }
 
 
+/* ============== MatInput ============== */ 
+.mat-card-header-text {
+  margin-left: 0!important;
+}
+
+.mat-form-field-label, .mat-focused{
+  caret-color: white;
+  color:white !important;
+}
+
+.mat-form-field-outline{
+  caret-color: white;
+  color:white !important;
+}
+
+
 /* ============== CSS Animations ============== */ 
 
 /* Change loading screen background */

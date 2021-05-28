@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { Engine, Scene, FreeCamera, Vector3, HemisphericLight, MeshBuilder, SceneLoader, ArcRotateCamera, StandardMaterial, Texture, PBRMetallicRoughnessMaterial, Mesh, ActionManager, InterpolateValueAction, Color3, EasingFunction, Animation, CubicEase, ExecuteCodeAction, DynamicTexture } from '@babylonjs/core';
+import { Engine, Scene, FreeCamera, Vector3, HemisphericLight, MeshBuilder, SceneLoader, ArcRotateCamera, StandardMaterial, Texture, PBRMetallicRoughnessMaterial, Mesh, ActionManager, InterpolateValueAction, Color3, EasingFunction, Animation, CubicEase, ExecuteCodeAction, DynamicTexture, PointLight } from '@babylonjs/core';
 import { ExhibitionsService } from '../services/exhibitions.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -80,10 +80,10 @@ export class SceneComponent implements OnInit, AfterViewInit {
 		camera.ellipsoid = new Vector3(4, 16, 4);
     camera.applyGravity = true;
 
-    // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
-    const light = new HemisphericLight('light', new Vector3(0, 1, 0), scene);
-    // Default intensity is 1. Let's dim the light a small amount
-    light.intensity = 1;
+    // // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
+    // const light = new HemisphericLight('light', new Vector3(0, 1, 0), scene);
+    // // Default intensity is 1. Let's dim the light a small amount
+    // light.intensity = 1;
 
     // Build walls
     const wall_material = new StandardMaterial("wall_material", scene);
@@ -189,8 +189,10 @@ export class SceneComponent implements OnInit, AfterViewInit {
 					frame_plane.position = new Vector3(current_wall_frame_position[0], current_wall_frame_position[1], artwork_space)
 				}
 
-		    var artwork_light = new HemisphericLight(`light-${artwork.slug}`, new Vector3(current_wall_position[0], current_wall_position[1], artwork_space), scene);
-		    artwork_light.intensity = 1;
+		    var artwork_light = new PointLight(`light-${artwork.slug}`, new Vector3(0, 30, 0), scene);
+		    artwork_light.range = 150;
+		    artwork_light.intensity = .5;
+		    artwork_light.parent = artwork_plane;
 
 				if(current_wall_rotation.length > 0) {
 					artwork_plane.rotation = new Vector3(current_wall_rotation[0], current_wall_rotation[1], current_wall_rotation[2]);
