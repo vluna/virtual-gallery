@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { Engine, Scene, FreeCamera, Vector3, HemisphericLight, MeshBuilder, SceneLoader, ArcRotateCamera, StandardMaterial, Texture, PBRMetallicRoughnessMaterial, Mesh, ActionManager, InterpolateValueAction, Color3, EasingFunction, Animation, CubicEase, ExecuteCodeAction, DynamicTexture, PointLight } from '@babylonjs/core';
+import { Engine, Scene, FreeCamera, Vector3, HemisphericLight, MeshBuilder, SceneLoader, ArcRotateCamera, StandardMaterial, Texture, PBRMetallicRoughnessMaterial, Mesh, ActionManager, InterpolateValueAction, Color3, EasingFunction, Animation, CubicEase, ExecuteCodeAction, DynamicTexture, PointLight, SpotLight, HighlightLayer } from '@babylonjs/core';
 import { ExhibitionsService } from '../services/exhibitions.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -181,23 +181,61 @@ export class SceneComponent implements OnInit, AfterViewInit {
 			  frame_material.diffuseTexture = frame_texture;
 			  frame_plane.material = frame_material;
 
-			  if(walls[idx_wall]['id'] == 'left' || walls[idx_wall]['id'] == 'right') {
-					artwork_plane.position = new Vector3(artwork_space, current_wall_position[1], current_wall_position[2])
-					frame_plane.position = new Vector3(artwork_space, current_wall_frame_position[1], current_wall_frame_position[2])
-			  } else {
-					artwork_plane.position = new Vector3(current_wall_position[0], current_wall_position[1], artwork_space)
-					frame_plane.position = new Vector3(current_wall_frame_position[0], current_wall_frame_position[1], artwork_space)
-				}
 
-		    var artwork_light = new PointLight(`light-${artwork.slug}`, new Vector3(0, 30, 0), scene);
-		    artwork_light.range = 150;
-		    artwork_light.intensity = .5;
-		    artwork_light.parent = artwork_plane;
+
+
+
+
+   	
+
+
+
+			  var artwork_lamp = MeshBuilder.CreateSphere(`lamp-${artwork.slug}`, { diameter: 5 }, scene);
+        var artwork_lamp_material = new StandardMaterial(`lamp-material-${artwork.slug}`, scene)
+        artwork_lamp_material.emissiveColor = new Color3(1.0, 1.0, 0.7);
+        artwork_lamp.material = artwork_lamp_material;
+
+        var artwork_lamp_glow = new HighlightLayer(`lamp-glow-${artwork.slug}`, scene);
+		    artwork_lamp_glow.innerGlow = false;
+		    artwork_lamp_glow.addMesh(artwork_lamp, new Color3(.9, .9, .9))
+
+				var artwork_lamp_light = new SpotLight(`lamp-light-${artwork.slug}`, new Vector3(0, 0, 0), new Vector3(0, 0, 0), Math.PI, 10, scene);
+		    artwork_lamp_light.range = 40;
+        artwork_lamp_light.diffuse = new Color3(255, 255, 255);
+    		artwork_lamp_light.specular = new Color3(255, 255, 255);
+
+			  if(walls[idx_wall]['id'] == 'left' || walls[idx_wall]['id'] == 'right') {
+					artwork_plane.position = new Vector3(artwork_space, current_wall_position[1], current_wall_position[2]);
+					frame_plane.position = new Vector3(artwork_space, current_wall_frame_position[1], current_wall_frame_position[2]);
+					artwork_lamp.position = new Vector3(artwork_space, (current_wall_frame_position[1] + 17), current_wall_frame_position[2]-1);
+					artwork_lamp_light.range = 140;
+					if(walls[idx_wall]['id'] == 'left') {
+						artwork_lamp_light.position = new Vector3(0, 0, 10);
+			  		artwork_lamp_light.direction = new Vector3(-10, -1, -10);
+					} else {
+			  		artwork_lamp_light.position = new Vector3(-3, 0, -3);
+			  		artwork_lamp_light.direction = new Vector3(-10, -1, -10);
+					}
+			  } else {
+					artwork_plane.position = new Vector3(current_wall_position[0], current_wall_position[1], artwork_space);
+					frame_plane.position = new Vector3(current_wall_frame_position[0], current_wall_frame_position[1], artwork_space);
+					artwork_lamp.position = new Vector3(current_wall_frame_position[0]-1, (current_wall_frame_position[1] + 17), artwork_space);
+					if(walls[idx_wall]['id'] == 'front') {
+			  		artwork_lamp_light.direction = new Vector3(0, -1, 0);
+					} else {
+			  		artwork_lamp_light.position = new Vector3(2, 0, 0);
+			  		artwork_lamp_light.direction = new Vector3(0, -1, 0);
+					}
+				}
 
 				if(current_wall_rotation.length > 0) {
 					artwork_plane.rotation = new Vector3(current_wall_rotation[0], current_wall_rotation[1], current_wall_rotation[2]);
 					frame_plane.rotation = new Vector3(current_wall_rotation[0], current_wall_rotation[1], current_wall_rotation[2]);
 				}
+
+
+		    artwork_lamp_light.parent = artwork_lamp;
+
 
 			  idx_artwork += 1;
 			  artwork_space += 50;
