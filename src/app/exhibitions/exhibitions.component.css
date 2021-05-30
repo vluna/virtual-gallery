@@ -1,3 +1,35 @@
+.bg {
+  animation:slide 10s ease-in-out infinite alternate;
+  background-image: linear-gradient(-60deg, #e8e8e8 50%, #8c8c8c 50%);
+  bottom:0;
+  left:-50%;
+  opacity:.5;
+  position:fixed;
+  right:-50%;
+  top:0;
+  z-index:-1;
+}
+
+.bg2 {
+  animation-direction:alternate-reverse;
+  animation-duration: 10s;
+}
+
+.bg3 {
+  animation-duration: 20s;
+}
+
+
+
+@keyframes slide {
+  0% {
+    transform:translateX(-25%);
+  }
+  100% {
+    transform:translateX(25%);
+  }
+}
+
 header {  
   position: absolute;
   top: 0;
@@ -32,10 +64,18 @@ header img {
   margin: 250px 0 25px 0;
 }
 
-#exhibitions-list h1 {
-  text-align: center;
+
+#exhibitions-list .exhibitions-title-container {
   margin: 0 0 45px;
-  font-weight: bold;
+}
+
+#exhibitions-list div h1 {
+  text-align: center;
+  background-color: rgba(255,255,255,.8);
+  border-radius: .25em;
+  padding: 20px 40px;
+  margin: auto;
+  width: fit-content;
 }
 
 .exhibitions-card mat-card-actions a {
@@ -49,6 +89,15 @@ header img {
 .exhibitions-card mat-card-content img {
   width: 100%;
   margin: 0!important;
+}
+
+.exhibitions-card mat-card-actions a {
+  background: black;
+  color: white;
+}
+
+.exhibitions-card mat-card-actions a:hover, .exhibitions-card mat-card-actions a:active , .exhibitions-card mat-card-actions a:focus {
+  opacity: .75;
 }
 
 footer {  

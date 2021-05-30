@@ -87,7 +87,7 @@ export class SceneComponent implements OnInit, AfterViewInit {
 
     // Build walls
     const wall_material = new StandardMaterial("wall_material", scene);
-		wall_material.diffuseTexture = new Texture("/assets/images/textures/concrete.jpg", scene);
+		wall_material.diffuseTexture = new Texture("assets/images/textures/concrete.jpg", scene);
 
     const left_wall = MeshBuilder.CreateBox('box', {width: wall_width, height: wall_height}, scene);
 		left_wall.position = new Vector3(0, 20, -half_wall_width);
@@ -117,7 +117,7 @@ export class SceneComponent implements OnInit, AfterViewInit {
 		// Create ground
     const ground = MeshBuilder.CreateGround('ground', {width: floor_width, height: floor_width}, scene);
 		const ground_material = new StandardMaterial("ground_material", scene);
-		ground_material.diffuseTexture = new Texture("/assets/images/textures/wood.jpg", scene);
+		ground_material.diffuseTexture = new Texture("assets/images/textures/wood.jpg", scene);
 		ground.material = ground_material;
 		ground.checkCollisions = true;
 
