@@ -1,0 +1,42 @@
+<div id="artwork-dialog-modal">
+<h2 mat-dialog-title>{{ artwork.title }}</h2>
+
+<mat-dialog-content>
+	<mat-tab-group mat-align-tabs="center">
+	  <mat-tab label="Artwork Information" id="artwork-information">
+	  	<div fxLayout.xs="column" fxLayout="row wrap" fxLayoutGap="10px" ngClass.gt-xs="ml-10" id="artwork-information">
+		  	<p>{{artwork | json}}</p>
+		  	<div fxFlex.sm="1 calc(100%)" fxFlex.md="50">
+		  		<img src="https://www.collectionartnb.ca/{{artwork.image}}">
+		  	</div>
+
+		  	<div fxFlex.sm="1 calc(100%)" fxFlex.md="50">
+		  		<div [innerHTML]="artwork.description"></div>
+		  	</div>
+
+		  	<table fxFlex="100">
+		  		<tbody>
+		  			<tr>
+				   		<td> Year Created</td>
+				    	<td> {{artwork.year_created}}</td>
+				    </tr>
+		  			<tr>
+				   		<td> Year Acquired</td>
+				    	<td> {{artwork.year_acquired}}</td>
+				    </tr>
+				  </tbody>
+				</table>
+		  </div>
+	  </mat-tab>
+
+
+	  <mat-tab label="Artists Information">
+	  </mat-tab>
+	</mat-tab-group>
+</mat-dialog-content>
+
+
+<mat-dialog-actions>
+    <a mat-raised-button (click)="close()">CLOSE</a>
+</mat-dialog-actions>
+</div>

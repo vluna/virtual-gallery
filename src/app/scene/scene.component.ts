@@ -1,9 +1,11 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { Engine, Scene, FreeCamera, Vector3, HemisphericLight, MeshBuilder, SceneLoader, ArcRotateCamera, StandardMaterial, Texture, PBRMetallicRoughnessMaterial, Mesh, ActionManager, InterpolateValueAction, Color3, EasingFunction, Animation, CubicEase, ExecuteCodeAction, DynamicTexture, PointLight, SpotLight, HighlightLayer } from '@babylonjs/core';
+import { Engine, Scene, FreeCamera, Vector2, Vector3, HemisphericLight, MeshBuilder, SceneLoader, ArcRotateCamera, StandardMaterial, Texture, PBRMetallicRoughnessMaterial, Mesh, ActionManager, InterpolateValueAction, Color3, EasingFunction, Animation, CubicEase, ExecuteCodeAction, DynamicTexture, PointLight, SpotLight, HighlightLayer } from '@babylonjs/core';
 import { ExhibitionsService } from '../services/exhibitions.service';
+import { SceneDetailsComponent } from '../scene-details/scene-details.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-scene',
@@ -23,7 +25,8 @@ export class SceneComponent implements OnInit, AfterViewInit {
   constructor(
   	private exhibitionsService: ExhibitionsService,
   	private snackBar: MatSnackBar,
-  	private actRoute: ActivatedRoute
+  	private actRoute: ActivatedRoute,
+  	private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -50,6 +53,18 @@ export class SceneComponent implements OnInit, AfterViewInit {
     		verticalPosition: "top"
 		  });
     });
+  }
+
+  openDialog(data) {
+    const dialogConfig = new MatDialogConfig();
+
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+
+    dialogConfig.data = data;
+
+    this.dialog.open(SceneDetailsComponent, dialogConfig);
+       
   }
 
   createScene(canvas: HTMLCanvasElement) {
@@ -80,34 +95,36 @@ export class SceneComponent implements OnInit, AfterViewInit {
 		camera.ellipsoid = new Vector3(4, 16, 4);
     camera.applyGravity = true;
 
-    // // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
-    // const light = new HemisphericLight('light', new Vector3(0, 1, 0), scene);
-    // // Default intensity is 1. Let's dim the light a small amount
-    // light.intensity = 1;
+    // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
+    const light = new HemisphericLight('light', new Vector3(0, 1, 0), scene);
+    // Default intensity is 1. Let's dim the light a small amount
+    light.intensity = 1;
+
+
 
     // Build walls
     const wall_material = new StandardMaterial("wall_material", scene);
 		wall_material.diffuseTexture = new Texture("assets/images/textures/concrete.jpg", scene);
 
-    const left_wall = MeshBuilder.CreateBox('box', {width: wall_width, height: wall_height}, scene);
+    const left_wall = MeshBuilder.CreateBox('left-wall', {width: wall_width, height: wall_height}, scene);
 		left_wall.position = new Vector3(0, 20, -half_wall_width);
 		left_wall.material = wall_material;
 		left_wall.checkCollisions = true;
 		left_wall.position.y = 20;
 
-    const right_wall = MeshBuilder.CreateBox('box', {width: wall_width, height: wall_height}, scene);
+    const right_wall = MeshBuilder.CreateBox('right-wall', {width: wall_width, height: wall_height}, scene);
 		right_wall.position = new Vector3(0, 20, half_wall_width);
 		right_wall.material = wall_material;
 		right_wall.checkCollisions = true;
 		right_wall.position.y = 20;
 
-    const front_wall = MeshBuilder.CreateBox('box', {width: wall_width, height: wall_height}, scene);
+    const front_wall = MeshBuilder.CreateBox('front-wall', {width: wall_width, height: wall_height}, scene);
 		front_wall.position = new Vector3(half_wall_width, 20, 0);
 		front_wall.material = wall_material;
 		front_wall.checkCollisions = true;
 		front_wall.rotation = new Vector3(0, Math.PI / 2, 0);
 
-    const back_wall = MeshBuilder.CreateBox('box', {width: wall_width, height: wall_height}, scene);
+    const back_wall = MeshBuilder.CreateBox('back-wall', {width: wall_width, height: wall_height}, scene);
 		back_wall.position = new Vector3(-half_wall_width, 20, 0);
 		back_wall.material = wall_material;
 		back_wall.checkCollisions = true;
@@ -120,6 +137,15 @@ export class SceneComponent implements OnInit, AfterViewInit {
 		ground_material.diffuseTexture = new Texture("assets/images/textures/wood.jpg", scene);
 		ground.material = ground_material;
 		ground.checkCollisions = true;
+
+
+    const roof = MeshBuilder.CreateBox('roof', {width: floor_width, height: wall_height}, scene);
+		const roof_material = new StandardMaterial("roof_material", scene);
+		roof_material.diffuseTexture = new Texture("assets/images/textures/wood.jpg", scene);
+		roof.material = roof_material;
+		roof.checkCollisions = true;
+		roof.position = new Vector3(0, 100, 0);
+		roof.rotation = new Vector3(Math.PI/2, 0, 0);
 
 		// Create painting
 		var idx_artwork = 0;
@@ -182,74 +208,65 @@ export class SceneComponent implements OnInit, AfterViewInit {
 			  frame_plane.material = frame_material;
 
 
+			 //  var artwork_lamp = MeshBuilder.CreateSphere(`lamp-${artwork.slug}`, { diameter: 5 }, scene);
+    //     var artwork_lamp_material = new StandardMaterial(`lamp-material-${artwork.slug}`, scene)
+    //     artwork_lamp_material.emissiveColor = new Color3(1.0, 1.0, 0.7);
+    //     artwork_lamp.material = artwork_lamp_material;
 
+    //     var artwork_lamp_glow = new HighlightLayer(`lamp-glow-${artwork.slug}`, scene);
+		  //   artwork_lamp_glow.addMesh(artwork_lamp, new Color3(.9, .9, .9))
 
+				// var artwork_lamp_light = new SpotLight(`lamp-light-${artwork.slug}`, new Vector3(0, 0, 0), new Vector3(0, -1, 0), Math.PI, 10, scene);
+	  	// 	artwork_lamp_light.range = 40;
+ 			// 	artwork_lamp_light.diffuse = new Color3(255, 255, 255);
+  		// 	artwork_lamp_light.specular = new Color3(255, 255, 255);
 
+  		// 	artwork_lamp_light.parent = artwork_lamp;
 
-   	
-
-
-
-			  var artwork_lamp = MeshBuilder.CreateSphere(`lamp-${artwork.slug}`, { diameter: 5 }, scene);
-        var artwork_lamp_material = new StandardMaterial(`lamp-material-${artwork.slug}`, scene)
-        artwork_lamp_material.emissiveColor = new Color3(1.0, 1.0, 0.7);
-        artwork_lamp.material = artwork_lamp_material;
-
-        var artwork_lamp_glow = new HighlightLayer(`lamp-glow-${artwork.slug}`, scene);
-		    artwork_lamp_glow.innerGlow = false;
-		    artwork_lamp_glow.addMesh(artwork_lamp, new Color3(.9, .9, .9))
-
-				var artwork_lamp_light = new SpotLight(`lamp-light-${artwork.slug}`, new Vector3(0, 0, 0), new Vector3(0, 0, 0), Math.PI, 10, scene);
-		    artwork_lamp_light.range = 40;
-        artwork_lamp_light.diffuse = new Color3(255, 255, 255);
-    		artwork_lamp_light.specular = new Color3(255, 255, 255);
 
 			  if(walls[idx_wall]['id'] == 'left' || walls[idx_wall]['id'] == 'right') {
 					artwork_plane.position = new Vector3(artwork_space, current_wall_position[1], current_wall_position[2]);
 					frame_plane.position = new Vector3(artwork_space, current_wall_frame_position[1], current_wall_frame_position[2]);
-					artwork_lamp.position = new Vector3(artwork_space, (current_wall_frame_position[1] + 17), current_wall_frame_position[2]-1);
-					artwork_lamp_light.range = 140;
+					//artwork_lamp.position = new Vector3(artwork_space, (current_wall_frame_position[1] + 17), current_wall_frame_position[2]-1);
 					if(walls[idx_wall]['id'] == 'left') {
-						artwork_lamp_light.position = new Vector3(0, 0, 10);
-			  		artwork_lamp_light.direction = new Vector3(-10, -1, -10);
+						//var light = new SpotLight("spotLight---", new Vector3(0, 40, 0), new Vector3(0, -1, 0), Math.PI, 10, scene);
+						//artwork_lamp.position = new Vector3(0, 20, 0);
+
 					} else {
-			  		artwork_lamp_light.position = new Vector3(-3, 0, -3);
-			  		artwork_lamp_light.direction = new Vector3(-10, -1, -10);
+						//var light = new SpotLight("spotLight---", new Vector3(0, 20, 0), new Vector3(0, -1, 0), Math.PI, 10, scene);
+						//console.log(light);
 					}
 			  } else {
 					artwork_plane.position = new Vector3(current_wall_position[0], current_wall_position[1], artwork_space);
 					frame_plane.position = new Vector3(current_wall_frame_position[0], current_wall_frame_position[1], artwork_space);
-					artwork_lamp.position = new Vector3(current_wall_frame_position[0]-1, (current_wall_frame_position[1] + 17), artwork_space);
+
 					if(walls[idx_wall]['id'] == 'front') {
-			  		artwork_lamp_light.direction = new Vector3(0, -1, 0);
+						// artwork_lamp.position = new Vector3(current_wall_frame_position[0]-1, (current_wall_frame_position[1] + 17), artwork_space);
 					} else {
-			  		artwork_lamp_light.position = new Vector3(2, 0, 0);
-			  		artwork_lamp_light.direction = new Vector3(0, -1, 0);
+						// artwork_lamp.position = new Vector3(current_wall_frame_position[0]+1, (current_wall_frame_position[1] + 17), artwork_space);
 					}
 				}
+
+				artwork_plane.actionManager = new ActionManager(scene);
+				var _this = this
+		    artwork_plane.actionManager.registerAction(
+		    	new ExecuteCodeAction(
+		      	ActionManager.OnPickTrigger, function (ev) {
+							_this.openDialog(artwork);
+		      		
+		        }
+		      )
+				);
 
 				if(current_wall_rotation.length > 0) {
 					artwork_plane.rotation = new Vector3(current_wall_rotation[0], current_wall_rotation[1], current_wall_rotation[2]);
 					frame_plane.rotation = new Vector3(current_wall_rotation[0], current_wall_rotation[1], current_wall_rotation[2]);
 				}
 
-
-		    artwork_lamp_light.parent = artwork_lamp;
-
-
 			  idx_artwork += 1;
 			  artwork_space += 50;
-
-		  //   plane.actionManager = new ActionManager(scene);
-		  //   plane.actionManager.registerAction(
-		  //   	new ExecuteCodeAction(
-		  //     ActionManager.OnPickTrigger, function (ev) {
-		  //     	console.log(artwork);
-		  //     	setCamLateralLeft(idx);
-		  //       }
-		  //     )
-				// );
 		  }
+
 		  idx_wall += 1
 		  var artwork_space = 0;
 			if(artwork_per_wall > 1) {
@@ -302,29 +319,6 @@ export class SceneComponent implements OnInit, AfterViewInit {
  //    plane.material = mat;
 
 
-	//   var speed = 45;
-	//   var frameCount = 200;
-	// 	var setCamLateralLeft = function(idx) {
-	//   	animateCameraTargetToPosition(camera, speed, frameCount, new Vector3(-240, 15, 10 * idx));
-	//   	animateCameraToPosition(camera, speed, frameCount, new Vector3(-200, 15, 10 * idx));
-	//   };
-
-	//     var animateCameraTargetToPosition = function(cam, speed, frameCount, newPos) {
-	//         var ease = new CubicEase();
-	//         ease.setEasingMode(EasingFunction.EASINGMODE_EASEINOUT);
-
-	//         var aable1 = Animation.CreateAndStartAnimation('at5', cam, 'target', speed, frameCount, cam.target, newPos, 0, ease);
-	//         aable1.disposeOnEnd = true;
-	//     }
-
-	//   var animateCameraToPosition = function(cam, speed, frameCount, newPos) {
-	//   	var ease = new CubicEase();
-	//     ease.setEasingMode(EasingFunction.EASINGMODE_EASEINOUT);
-	//     var aable2 = Animation.CreateAndStartAnimation('at4', cam, 'position', speed, frameCount, cam.position, newPos, 0, ease);
-	//     aable2.disposeOnEnd = true;
-	//   }
-
-
 	// 	var artworkTest = function(artwork, idx) {
 
 	// 	}
@@ -332,15 +326,4 @@ export class SceneComponent implements OnInit, AfterViewInit {
     return scene;
   }
 
-
-
 }
-// var animateCameraToPosition = function(cam, speed, frameCount, newPos) {
-//       }
-
-//     var speed = 45;
-//     var frameCount = 200;
-// ar setCamLateralLeft = function() {
-//         animateCameraTargetToPosition(camera, speed, frameCount, new BABYLON.Vector3(5, 15, 0));
-//         animateCameraToPosition(camera, speed, frameCount, new BABYLON.Vector3(-85, 15, 0));
-//     };

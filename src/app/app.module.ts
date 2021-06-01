@@ -8,6 +8,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppComponent } from './app.component';
 import { SceneComponent } from './scene/scene.component';
 import { ExhibitionsComponent } from './exhibitions/exhibitions.component';
+import { SceneDetailsComponent } from './scene-details/scene-details.component';
 
 // Services
 import { ExhibitionsService } from './services/exhibitions.service';
@@ -16,6 +17,7 @@ import { ExhibitionsService } from './services/exhibitions.service';
 import { ExhibitionsFilterPipe } from './pipes/exhibitions-filter.pipe';
 
 // Other
+import { FormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
@@ -25,15 +27,17 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatTabsModule } from '@angular/material/tabs';
 
-import { FormsModule } from '@angular/forms'
 
 @NgModule({
   declarations: [
     AppComponent,
     SceneComponent,
     ExhibitionsComponent,
-    ExhibitionsFilterPipe
+    ExhibitionsFilterPipe,
+    SceneDetailsComponent
   ],
   imports: [
     BrowserModule,
@@ -49,11 +53,14 @@ import { FormsModule } from '@angular/forms'
     MatAutocompleteModule,
     MatFormFieldModule,
     MatInputModule,
-    MatIconModule
+    MatIconModule,
+    MatDialogModule,
+    MatTabsModule
   ],
   providers: [
     ExhibitionsService
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [SceneDetailsComponent]
 })
 export class AppModule { }

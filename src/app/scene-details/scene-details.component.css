@@ -1,0 +1,9 @@
+#artwork-dialog-modal mat-dialog-actions a {
+  background: black;
+  color: white;
+}
+
+#artwork-information img {
+  width: 60%;
+  margin: 0 20%;
+}

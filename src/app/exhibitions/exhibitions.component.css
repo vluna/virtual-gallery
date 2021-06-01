@@ -19,8 +19,6 @@
   animation-duration: 20s;
 }
 
-
-
 @keyframes slide {
   0% {
     transform:translateX(-25%);
