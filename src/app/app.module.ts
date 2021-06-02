@@ -29,7 +29,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatTabsModule } from '@angular/material/tabs';
-
+import { MatChipsModule } from '@angular/material/chips';
 
 @NgModule({
   declarations: [
@@ -55,7 +55,8 @@ import { MatTabsModule } from '@angular/material/tabs';
     MatInputModule,
     MatIconModule,
     MatDialogModule,
-    MatTabsModule
+    MatTabsModule,
+    MatChipsModule
   ],
   providers: [
     ExhibitionsService

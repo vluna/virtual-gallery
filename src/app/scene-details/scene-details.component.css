@@ -3,7 +3,39 @@
   color: white;
 }
 
-#artwork-information img {
+#artwork-information img, #artists-information img {
+  border: 5px solid #000;
+  box-shadow: 0 10px 7px -5px rgb(0 0 0 / 30%);
+  padding: 30px;
+  background: #fff;
+}
+
+#artwork-information img.with-description, #artists-information img.with-description {
+  float: left;
+  max-width: 100%;
+  margin: 0 10px 0;
+}
+
+#artwork-information img.without-description, #artists-information img.without-description {
   width: 60%;
-  margin: 0 20%;
+  margin: 0 calc(20% - 30px);
+}
+
+#artwork-information {
+  margin: 20px 0 0;
+}
+
+#artwork-information mat-chip-list p {
+  padding: 0 0 0 10px;
+}
+
+#artists-information h1 {
+  text-align: center;
+}
+
+#artists-information .container {
+  margin: 20px 0;
+  padding: 0 0 20px 0;
+  display: inline-block;
+  border-bottom: 1px solid #E4E4E4;
 }

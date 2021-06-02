@@ -3,34 +3,92 @@
 
 <mat-dialog-content>
 	<mat-tab-group mat-align-tabs="center">
-	  <mat-tab label="Artwork Information" id="artwork-information">
-	  	<div fxLayout.xs="column" fxLayout="row wrap" fxLayoutGap="10px" ngClass.gt-xs="ml-10" id="artwork-information">
-		  	<p>{{artwork | json}}</p>
-		  	<div fxFlex.sm="1 calc(100%)" fxFlex.md="50">
-		  		<img src="https://www.collectionartnb.ca/{{artwork.image}}">
-		  	</div>
-
-		  	<div fxFlex.sm="1 calc(100%)" fxFlex.md="50">
+	  <mat-tab label="Artwork Information">
+	  	<div fxLayout.xs="column" fxLayout="row wrap" fxLayoutGap="10px" id="artwork-information">
+		  	<div fxFlex="100">
+		  		<img *ngIf="artwork.description" class="with-description" src="https://www.collectionartnb.ca/{{artwork.image}}">
+		  		<img *ngIf="!artwork.description" class="without-description" src="https://www.collectionartnb.ca/{{artwork.image}}">
 		  		<div [innerHTML]="artwork.description"></div>
 		  	</div>
 
-		  	<table fxFlex="100">
-		  		<tbody>
-		  			<tr>
-				   		<td> Year Created</td>
-				    	<td> {{artwork.year_created}}</td>
-				    </tr>
-		  			<tr>
-				   		<td> Year Acquired</td>
-				    	<td> {{artwork.year_acquired}}</td>
-				    </tr>
-				  </tbody>
-				</table>
+		  	<hr>
+
+		  	<div fxFlex="100">
+		  		<mat-chip-list cdkDropListOrientation="horizontal">
+		  			<p>Year Created
+					  	<mat-chip>
+					    	{{artwork.year_created}}
+					  	</mat-chip>
+						</p>
+					</mat-chip-list>
+				</div>
+
+		  	<div fxFlex="100">
+		  		<mat-chip-list cdkDropListOrientation="horizontal">
+		  			<p>Year Acquired
+					  	<mat-chip>
+					    	{{artwork.year_acquired}}
+					  	</mat-chip>
+						</p>
+					</mat-chip-list>
+				</div>
+
+		  	<div fxFlex="100">
+		  		<mat-chip-list cdkDropListOrientation="horizontal">
+		  			<p>Culture
+					  	<mat-chip *ngFor="let culture of artwork.cultures">
+					    	{{culture.name}}
+					  	</mat-chip>
+						</p>
+					</mat-chip-list>
+				</div>
+
+		  	<div fxFlex="100">
+		  		<mat-chip-list cdkDropListOrientation="horizontal">
+		  			<p>Medium
+					  	<mat-chip *ngFor="let medium of artwork.medium">
+					    	{{medium.name}}
+					  	</mat-chip>
+						</p>
+					</mat-chip-list>
+				</div>
+
+		  	<div fxFlex="100">
+		  		<mat-chip-list cdkDropListOrientation="horizontal">
+		  			<p>Surfaces
+					  	<mat-chip *ngFor="let surface of artwork.surfaces">
+					    	{{surface.name}}
+					  	</mat-chip>
+						</p>
+					</mat-chip-list>
+				</div>
+
+		  	<div fxFlex="100">
+		  		<mat-chip-list cdkDropListOrientation="horizontal">
+		  			<p>Art Forms
+					  	<mat-chip *ngFor="let artform of artwork.artforms">
+					    	{{artform.name}}
+					  	</mat-chip>
+						</p>
+					</mat-chip-list>
+				</div>
 		  </div>
+
+		  <hr>
 	  </mat-tab>
 
 
 	  <mat-tab label="Artists Information">
+	  	<div fxLayout.xs="column" fxLayout="row wrap" fxLayoutGap="10px" id="artists-information">
+			  <div fxFlex="100" *ngFor="let artist of artwork.artists">
+			  	<div class="container">
+			  		<h1 class="text-center">{{artist.name}}</h1>
+				  	<img *ngIf="artist.description && artist.image" class="with-description" src="https://www.collectionartnb.ca/{{artist.image}}">
+				  	<img *ngIf="!artist.description && artist.image" class="without-description" src="https://www.collectionartnb.ca/{{artist.image}}">
+				  	<div [innerHTML]="artist.description"></div>
+			  	</div>
+			  </div>
+		  </div>
 	  </mat-tab>
 	</mat-tab-group>
 </mat-dialog-content>
