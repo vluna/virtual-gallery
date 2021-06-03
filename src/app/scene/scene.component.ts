@@ -156,32 +156,49 @@ export class SceneComponent implements OnInit, AfterViewInit {
 			artwork_space = -half_wall_width/((artwork_per_wall/2) <= 1 ? 2 : (artwork_per_wall/2));
 		}
 
-		var walls = {
+    const speed = 45;
+	  const frameCount = 200;
+	  var cameraPosition, cameratargetPosition;
+
+		// Set font type
+    const font_type = "Arial";
+		// Set width an height for plane
+    const plane_width = 5;
+    const plane_height = 2;
+    const size = 12;
+
+		const walls = {
 			0: { // Front Wall
 				id: "front",
 				rotation: [0, (Math.PI / 2), 0],
 				position: [half_wall_width-1, 40, 0],
-				frame_position: [half_wall_width-.75, 40, 0]
+				frame_position: [half_wall_width-.75, 40, 0],
+				label_position: [half_wall_width-1, 40, 0]
 			}, 
 			1: { // Back Wall
 				id: "back",
 				rotation: [0, (-Math.PI / 2), 0],
 				position: [-(half_wall_width-1), 40, 0],
-				frame_position: [-(half_wall_width-.75), 40, 0]
+				frame_position: [-(half_wall_width-.75), 40, 0],
+				label_position: [-(half_wall_width-1), 40, 0]
 			}, 
 			2: { // Left Wall
 				id: "left",
 				rotation: [],
 				position: [0, 40, half_wall_width-1],
-				frame_position: [0, 40, half_wall_width-.75]
+				frame_position: [0, 40, half_wall_width-.75],
+				label_position: [0, 40, half_wall_width-1]
 			}, 
 			3: { // Right Wall
 				id: "right",
 				rotation: [0, Math.PI, 0],
 				position: [0, 40, -(half_wall_width-1)],
-				frame_position: [0, 40, -(half_wall_width-.75)]
+				frame_position: [0, 40, -(half_wall_width-.75)],
+				label_position: [0, 40, -(half_wall_width-1)]
 			}
 		};
+
+
 
 		console.log(this.exhibition.artworks);
 
@@ -190,22 +207,65 @@ export class SceneComponent implements OnInit, AfterViewInit {
 			  let artwork = this.exhibition.artworks[idx_artwork];
 				let current_wall_position = walls[idx_wall]["position"];
 				let current_wall_frame_position = walls[idx_wall]["frame_position"];
+				let current_wall_label_position = walls[idx_wall]["label_position"];
 				let current_wall_rotation = walls[idx_wall]["rotation"];
 	  		
 				let current_artwork_width = artwork.width / 10;
 				let current_artwork_height = artwork.height / 10;
 
 				var artwork_texture = new Texture(`https://www.collectionartnb.ca/${artwork.image}`, scene);
-				var artwork_plane = MeshBuilder.CreatePlane(artwork.slug, { width: current_artwork_width, height: current_artwork_height }, scene);
-			  var artwork_material = new StandardMaterial(`artwork-${artwork.slug}`, scene);
+				var artwork_plane = MeshBuilder.CreatePlane(`artwork-${artwork.slug}`, { width: current_artwork_width, height: current_artwork_height }, scene);
+			  var artwork_material = new StandardMaterial(`artwork-material-${artwork.slug}`, scene);
 			  artwork_material.diffuseTexture = artwork_texture;
 			  artwork_plane.material = artwork_material;
 
 			  var frame_texture = new Texture('assets/images/textures/wood.jpg', scene);
-				var frame_plane = MeshBuilder.CreatePlane(artwork.slug, { width: current_artwork_width+2, height: current_artwork_height+2 }, scene);
-			  var frame_material = new StandardMaterial(`frame-${artwork.slug}`, scene);
+				var frame_plane = MeshBuilder.CreatePlane(`frame-${artwork.slug}`, { width: current_artwork_width+2, height: current_artwork_height+2 }, scene);
+			  var frame_material = new StandardMaterial(`frame-material-${artwork.slug}`, scene);
 			  frame_material.diffuseTexture = frame_texture;
 			  frame_plane.material = frame_material;
+
+			 //  var label_texture = new Texture('assets/images/textures/gold.jpg', scene);
+				// var label_plane = MeshBuilder.CreatePlane(`label-${artwork.slug}`, { width: 5, height: 2 }, scene);
+			 //  var label_material = new StandardMaterial(`label-material-${artwork.slug}`, scene);
+			 //  label_material.diffuseTexture = label_texture;
+			 //  label_plane.material = label_material;
+
+		    //Create plane
+		    var label_plane = MeshBuilder.CreatePlane(`label-${artwork.slug}`, { width: plane_width, height: plane_height }, scene);
+
+		    //Set width and height for dynamic texture using same multiplier
+		    var dynamic_texture_width = plane_width * 60;
+		    var dynamic_texture_height = plane_height * 60;
+
+		    //Set text
+		    var text = ` ${artwork.title} `;
+		    
+		    //Create dynamic texture
+		    var dynamic_texture = new DynamicTexture(`label-texture-${artwork.slug}`, { width: dynamic_texture_width, height: dynamic_texture_height }, scene, true);
+
+		    //Check width of text for given font type at any size of font
+		    var ctx = dynamic_texture.getContext();
+				
+		    ctx.font = size + "px " + font_type;
+		    var text_width = ctx.measureText(text).width;
+		    
+		    //Calculate ratio of text width to size of font used
+		    var ratio = text_width/size;
+			
+				//set font to be actually used to write text on dynamic texture
+		    var font_size = Math.floor(dynamic_texture_width / (ratio * 2)); //size of multiplier (1) can be adjusted, increase for smaller text
+		    var font = 16 + "px " + font_type;
+			
+				//Draw text
+		    dynamic_texture.drawText(text, null, null, font, "#000000", "#FFD700", true);
+
+		    //create material
+		    var label_material = new StandardMaterial(`label-material-${artwork.slug}`, scene);
+		    label_material.diffuseTexture = dynamic_texture;
+		    
+		    //apply material
+		    label_plane.material = label_material;
 
 
 			 //  var artwork_lamp = MeshBuilder.CreateSphere(`lamp-${artwork.slug}`, { diameter: 5 }, scene);
@@ -227,6 +287,7 @@ export class SceneComponent implements OnInit, AfterViewInit {
 			  if(walls[idx_wall]['id'] == 'left' || walls[idx_wall]['id'] == 'right') {
 					artwork_plane.position = new Vector3(artwork_space, current_wall_position[1], current_wall_position[2]);
 					frame_plane.position = new Vector3(artwork_space, current_wall_frame_position[1], current_wall_frame_position[2]);
+					label_plane.position = new Vector3(artwork_space, (38 - current_artwork_height/2), current_wall_label_position[2]);
 					//artwork_lamp.position = new Vector3(artwork_space, (current_wall_frame_position[1] + 17), current_wall_frame_position[2]-1);
 					if(walls[idx_wall]['id'] == 'left') {
 						//var light = new SpotLight("spotLight---", new Vector3(0, 40, 0), new Vector3(0, -1, 0), Math.PI, 10, scene);
@@ -239,19 +300,34 @@ export class SceneComponent implements OnInit, AfterViewInit {
 			  } else {
 					artwork_plane.position = new Vector3(current_wall_position[0], current_wall_position[1], artwork_space);
 					frame_plane.position = new Vector3(current_wall_frame_position[0], current_wall_frame_position[1], artwork_space);
-
+					label_plane.position = new Vector3(current_wall_label_position[0], (38 - current_artwork_height/2), artwork_space);
 					if(walls[idx_wall]['id'] == 'front') {
+						//cameraPosition = new Vector3(current_wall_position[0]+20, 20, -100);
+						//cameratargetPosition = new Vector3(current_wall_position[0]+60, 20, -100);
 						// artwork_lamp.position = new Vector3(current_wall_frame_position[0]-1, (current_wall_frame_position[1] + 17), artwork_space);
 					} else {
+						//cameraPosition = new Vector3(artwork_space+40, current_wall_position[1], current_wall_position[2]);
+						//cameratargetPosition = new Vector3(artwork_space+40, current_wall_position[1], current_wall_position[2]);
 						// artwork_lamp.position = new Vector3(current_wall_frame_position[0]+1, (current_wall_frame_position[1] + 17), artwork_space);
 					}
 				}
 
 				artwork_plane.actionManager = new ActionManager(scene);
+				label_plane.actionManager = new ActionManager(scene);
 				var _this = this
 		    artwork_plane.actionManager.registerAction(
 		    	new ExecuteCodeAction(
 		      	ActionManager.OnPickTrigger, function (ev) {
+		      		//setCamLateralLeft(cameraPosition);
+							_this.openDialog(artwork);
+		      		
+		        }
+		      )
+				);
+		    label_plane.actionManager.registerAction(
+		    	new ExecuteCodeAction(
+		      	ActionManager.OnPickTrigger, function (ev) {
+		      		//setCamLateralLeft(cameraPosition);
 							_this.openDialog(artwork);
 		      		
 		        }
@@ -261,6 +337,7 @@ export class SceneComponent implements OnInit, AfterViewInit {
 				if(current_wall_rotation.length > 0) {
 					artwork_plane.rotation = new Vector3(current_wall_rotation[0], current_wall_rotation[1], current_wall_rotation[2]);
 					frame_plane.rotation = new Vector3(current_wall_rotation[0], current_wall_rotation[1], current_wall_rotation[2]);
+					label_plane.rotation = new Vector3(current_wall_rotation[0], current_wall_rotation[1], current_wall_rotation[2]);
 				}
 
 			  idx_artwork += 1;
@@ -275,55 +352,29 @@ export class SceneComponent implements OnInit, AfterViewInit {
 		}
 
 
-	// 	 //Set font type
- //    var font_type = "Arial";
-	
-	// //Set width an height for plane
- //    var planeWidth = 100;
- //    var planeHeight = 30;
 
- //    //Create plane
- //    var plane = MeshBuilder.CreatePlane("plane", {width:planeWidth, height:planeHeight}, scene);
+		// var setCamLateralLeft = function(position) {
+	 //  	animateCameraTargetToPosition(camera, speed, frameCount, cameraPosition);
+	 //  	animateCameraToPosition(camera, speed, frameCount, cameraPosition);
+	 //  };
 
- //    //Set width and height for dynamic texture using same multiplier
- //    var DTWidth = planeWidth * 60;
- //    var DTHeight = planeHeight * 60;
+	 //  var animateCameraTargetToPosition = function(cam, speed, frameCount, newPos) {
+	 //  	var ease = new CubicEase();
+	 //  	ease.setEasingMode(EasingFunction.EASINGMODE_EASEINOUT);
+	 //    var aable1 = Animation.CreateAndStartAnimation('at5', cam, 'target', speed, frameCount, cam.target, newPos, 0, ease);
+	 //    aable1.disposeOnEnd = true;
+	 //  }
 
- //    //Set text
- //    var text = "Some words to fit";
-    
- //    //Create dynamic texture
- //    var dynamicTexture = new DynamicTexture("DynamicTexture", {width:DTWidth, height:DTHeight}, scene, true);
-
- //    //Check width of text for given font type at any size of font
- //    var ctx = dynamicTexture.getContext();
-	// var size = 12; //any value will work
- //    ctx.font = size + "px " + font_type;
- //    var textWidth = ctx.measureText(text).width;
-    
- //    //Calculate ratio of text width to size of font used
- //    var ratio = textWidth/size;
-	
-	// //set font to be actually used to write text on dynamic texture
- //    var font_size = Math.floor(DTWidth / (ratio * 1)); //size of multiplier (1) can be adjusted, increase for smaller text
- //    var font = font_size + "px " + font_type;
-	
-	// //Draw text
- //    dynamicTexture.drawText(text, null, null, font, "#000000", "#ffffff", true);
-
- //    //create material
- //    var mat = new StandardMaterial("mat", scene);
- //    mat.diffuseTexture = dynamicTexture;
-    
- //    //apply material
- //    plane.material = mat;
+	 //  var animateCameraToPosition = function(cam, speed, frameCount, newPos) {
+	 //  	var ease = new CubicEase();
+	 //    ease.setEasingMode(EasingFunction.EASINGMODE_EASEINOUT);
+	 //    var aable2 = Animation.CreateAndStartAnimation('at4', cam, 'position', speed, frameCount, cam.position, newPos, 0, ease);
+	 //    aable2.disposeOnEnd = true;
+	 //  }
 
 
-	// 	var artworkTest = function(artwork, idx) {
 
-	// 	}
 
     return scene;
   }
-
 }

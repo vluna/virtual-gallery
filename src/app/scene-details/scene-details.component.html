@@ -1,10 +1,10 @@
 <div id="artwork-dialog-modal">
-<h2 mat-dialog-title>{{ artwork.title }}</h2>
+<h1 mat-dialog-title class="text-center">{{ artwork.title }}</h1>
 
 <mat-dialog-content>
 	<mat-tab-group mat-align-tabs="center">
 	  <mat-tab label="Artwork Information">
-	  	<div fxLayout.xs="column" fxLayout="row wrap" fxLayoutGap="10px" id="artwork-information">
+	  	<div fxLayout.xs="column" fxLayout="row wrap" id="artwork-information">
 		  	<div fxFlex="100">
 		  		<img *ngIf="artwork.description" class="with-description" src="https://www.collectionartnb.ca/{{artwork.image}}">
 		  		<img *ngIf="!artwork.description" class="without-description" src="https://www.collectionartnb.ca/{{artwork.image}}">
@@ -79,7 +79,7 @@
 
 
 	  <mat-tab label="Artists Information">
-	  	<div fxLayout.xs="column" fxLayout="row wrap" fxLayoutGap="10px" id="artists-information">
+	  	<div fxLayout.xs="column" fxLayout="row wrap" id="artists-information">
 			  <div fxFlex="100" *ngFor="let artist of artwork.artists">
 			  	<div class="container">
 			  		<h1 class="text-center">{{artist.name}}</h1>
